@@ -1,0 +1,53 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+---
+
+<ProjectLayout
+  title="MUN Quant Society"
+  subtitle="Director, Data & Infrastructure · Sep 2025 – Present"
+  logo="/logos/mqs.png"
+  logoAlt="MUN Quant Society"
+  context="Team"
+  tags={["Python", "PostgreSQL", "GCP", "PyTorch", "NLP", "GitHub Actions", "CI/CD", "Microservices"]}
+>
+
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
+    <p class="text-white/55 leading-relaxed max-w-2xl">
+      As Director of Data & Infrastructure for the MUN Quant Society, I lead the development 
+      of the society's end-to-end trading infrastructure — from real-time data ingestion 
+      to deployed microservices powering algorithmic trading strategies.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
+    <div class="space-y-8">
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Trading Infrastructure</h3>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Directed the development of real-time ingestion pipelines, PostgreSQL storage 
+          backends, and GCP-deployed microservices powering high-frequency trading, 
+          backtesting, and sentiment-analysis systems.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add architecture diagrams or dashboard screenshots
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Data Tooling & NLP Pipelines</h3>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Developed scalable Python/SQL data tooling with CI/CD via GitHub Actions. Built 
+          NLP pipelines using PyTorch and transformer hyperparameter tuning, ensuring 
+          low-latency aggregation and robust analysis of multi-source market feeds.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add code samples or pipeline diagrams
+        </div>
+      </div>
+    </div>
+  </section>
+
+</ProjectLayout>

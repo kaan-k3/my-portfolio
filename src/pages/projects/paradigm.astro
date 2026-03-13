@@ -1,0 +1,86 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+---
+
+<ProjectLayout
+  title="Paradigm Engineering"
+  subtitle="Electrical Team · Jan 2026 – Present"
+  logo="/logos/paradigm.png"
+  logoAlt="Paradigm Engineering"
+  logoClass="invert brightness-200"
+  context="Team"
+  tags={["STM32", "KiCad", "C", "PCB Design", "FDCAN", "JTAG", "PWM"]}
+>
+
+  <!-- Overview -->
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
+    <p class="text-white/55 leading-relaxed max-w-2xl">
+      Paradigm Engineering is a competitive engineering design team at Memorial University. 
+      As a member of the electrical team, I design and validate the vehicle's embedded 
+      electronics — from PCB schematic capture and layout to firmware development and 
+      hardware bring-up.
+    </p>
+  </section>
+
+  <!-- What I Built -->
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
+    <div class="space-y-8">
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Vehicle Control PCB</h3>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Designed a revised STM32-based vehicle control board in KiCad with USB-UART, 
+          ST-LINK/JTAG debug interfaces, FDCAN bus, voltage regulation, decoupling networks, 
+          and test points — reducing PCB footprint and improving signal/power integrity 
+          through optimized routing and power distribution.
+        </p>
+        <!-- Add your images here like this: -->
+        <!-- <div class="grid sm:grid-cols-2 gap-4">
+          <img src="/projects/paradigm/control-pcb-front.jpg" alt="Control PCB front" class="rounded-lg border border-white/10 w-full" />
+          <img src="/projects/paradigm/control-pcb-schematic.jpg" alt="Control PCB schematic" class="rounded-lg border border-white/10 w-full" />
+        </div> -->
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add photos: /public/projects/paradigm/control-pcb.jpg
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Power Distribution PCB</h3>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Designed a multi-rail power distribution board implementing switching regulators, 
+          filtering networks, and feedback control circuitry to generate regulated 48V, 24V, 
+          12V, 5V, and 3.3V rails for embedded control electronics, steering systems, and 
+          auxiliary subsystems.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add photos: /public/projects/paradigm/power-pcb.jpg
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Embedded Firmware</h3>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Developed embedded C firmware for STM32 microcontrollers implementing PWM-based 
+          motor braking control, enabling real-time actuator response and controlled braking 
+          behavior during subsystem integration and vehicle testing.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add photos or code snippets here
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Board Bring-Up & Testing</h3>
+        <p class="text-sm text-white/50 leading-relaxed">
+          Performed PCB bring-up and electrical validation of custom hardware using 
+          oscilloscopes and multimeters to verify voltage rails, debug communication 
+          interfaces, and troubleshoot signal integrity issues during embedded hardware 
+          integration and testing.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</ProjectLayout>

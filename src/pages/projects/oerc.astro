@@ -1,0 +1,76 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+---
+
+<ProjectLayout
+  title="OERC Research — Maritime Autonomy"
+  subtitle="Ocean Engineering Research Center · Supervised by Dr. Wei Qiu · Jan – May 2026"
+  logo="/logos/mun-engineering.png"
+  logoAlt="MUN Engineering"
+  logoClass="bg-white/10 p-1"
+  context="Work"
+  tags={["C++", "OpenGL", "NURBS", "IGES", "Arduino", "LiDAR", "PID Control", "MATLAB", "Research"]}
+>
+
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
+    <p class="text-white/55 leading-relaxed max-w-2xl">
+      During my research term at the Ocean Engineering Research Center under Dr. Wei Qiu, 
+      I worked across three interconnected projects in maritime autonomy — developing 
+      scientific visualization software, authoring a large-scale research report on 
+      autonomous vessel communications, and designing an autonomous model vessel for 
+      tank-testing experiments.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">Projects</h2>
+    <div class="space-y-8">
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Ship Hull Visualization Tool</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">C++ · OpenGL · NURBS · IGES</p>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Developed a C++/OpenGL desktop application for ship hull visualization and 
+          hydrodynamic preprocessing. The tool parses IGES files to render NURBS surfaces, 
+          control nets, and surface normals in an interactive 3D viewer. Integrated with a 
+          frequency-domain hydrodynamic solver developed by Dr. Wei Qiu to ingest vessel 
+          geometry and mass-distribution inputs and display motion RAOs, drift forces, and 
+          wave-induced loads.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add screenshots: /public/projects/oerc/hull-viz.jpg
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">MASS Connectivity Research</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">Technical Writing · IMO Standards · Transport Canada</p>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Authored a large-scale research report on Maritime Autonomous Surface Ship (MASS) 
+          connectivity requirements, evaluating communication needs across key operational 
+          phases to inform recommendations relevant to IMO and Transport Canada aligned 
+          autonomous vessel frameworks.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add report excerpts or diagrams here
+        </div>
+      </div>
+
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Autonomous Model Vessel</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">Arduino · LiDAR · PID Control · Embedded C++</p>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Designed and built an autonomous model vessel using Arduino microcontrollers and 
+          LiDAR sensors. Completed hardware design, wiring schematics, and embedded C++ 
+          PID-based control for wall tracking, obstacle avoidance, and course correction 
+          in tank-testing environments.
+        </p>
+        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+          Add photos: vessel build, wiring, tank tests
+        </div>
+      </div>
+    </div>
+  </section>
+
+</ProjectLayout>
