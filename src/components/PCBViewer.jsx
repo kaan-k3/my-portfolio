@@ -1,12 +1,28 @@
-import { useState, useRef, Suspense } from 'react';
-import { Canvas, useLoader, useFrame } from '@react-three/fiber';
-import { OrbitControls, Center, PerspectiveCamera, Environment } from '@react-three/drei';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 
 function PCBModel({ url, autoRotate }) {
   const scene = useLoader(VRMLLoader, url);
   const groupRef = useRef();
+  const { camera } = useThree();
+
+  // Auto-fit camera to model bounds on load
+  useEffect(() => {
+    if (!scene) return;
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const dist = maxDim * 2.2;
+    camera.position.set(center.x + dist * 0.5, center.y + dist * 0.6, center.z + dist);
+    camera.lookAt(center);
+    camera.near = 0.01;
+    camera.far = dist * 10;
+    camera.updateProjectionMatrix();
+  }, [scene, camera]);
 
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) {
@@ -23,11 +39,15 @@ function PCBModel({ url, autoRotate }) {
   );
 }
 
-function LoadingSpinner() {
+function LoadingIndicator() {
+  const meshRef = useRef();
+  useFrame((_, delta) => {
+    if (meshRef.current) meshRef.current.rotation.z += delta * 2;
+  });
   return (
-    <mesh>
-      <boxGeometry args={[0.5, 0.5, 0.05]} />
-      <meshStandardMaterial color="#7dd3fc" opacity={0.3} transparent />
+    <mesh ref={meshRef}>
+      <ringGeometry args={[0.3, 0.4, 24]} />
+      <meshBasicMaterial color="#7dd3fc" opacity={0.4} transparent />
     </mesh>
   );
 }
@@ -35,20 +55,18 @@ function LoadingSpinner() {
 function Scene({ url, autoRotate }) {
   return (
     <>
-      <ambientLight intensity={0.6} />
+      <ambientLight intensity={0.7} />
       <directionalLight position={[5, 8, 5]} intensity={1.0} />
       <directionalLight position={[-3, 4, -3]} intensity={0.4} />
-      <PerspectiveCamera makeDefault position={[0, 5, 8]} fov={40} />
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<LoadingIndicator />}>
         <PCBModel url={url} autoRotate={autoRotate} />
       </Suspense>
       <OrbitControls
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={2}
-        maxDistance={20}
-        autoRotate={false}
+        minDistance={0.5}
+        maxDistance={500}
       />
     </>
   );
@@ -56,6 +74,16 @@ function Scene({ url, autoRotate }) {
 
 export default function PCBViewer({ url, title, description }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Close fullscreen on Escape key
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setIsFullscreen(false);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isFullscreen]);
 
   return (
     <>
@@ -65,28 +93,34 @@ export default function PCBViewer({ url, title, description }) {
           className="relative w-full cursor-grab active:cursor-grabbing"
           style={{ height: '320px' }}
         >
-          <Canvas dpr={[1, 2]}>
+          <Canvas dpr={[1, 2]} camera={{ fov: 40, near: 0.01, far: 5000 }}>
             <Scene url={url} autoRotate={true} />
           </Canvas>
 
-          {/* Expand button */}
-          <button
-            onClick={() => setIsFullscreen(true)}
-            className="absolute top-3 right-3 px-3 py-1.5 text-xs font-mono
-                       bg-black/60 border border-white/15 rounded-lg text-white/60
-                       hover:text-white hover:border-white/30 transition-all
-                       backdrop-blur-sm cursor-pointer z-10"
-          >
-            ⛶ Expand
-          </button>
+          {/* Expand button - pointer-events ensures it's clickable above canvas */}
+          <div className="absolute top-3 right-3 z-20" style={{ pointerEvents: 'auto' }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFullscreen(true);
+              }}
+              className="px-3 py-1.5 text-xs font-mono
+                         bg-black/70 border border-white/15 rounded-lg text-white/60
+                         hover:text-white hover:border-white/30 transition-all
+                         backdrop-blur-sm cursor-pointer"
+            >
+              ⛶ Expand
+            </button>
+          </div>
 
           {/* Drag hint */}
-          <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/25 select-none">
+          <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/25 select-none z-20"
+               style={{ pointerEvents: 'none' }}>
             Drag to rotate · Scroll to zoom
           </div>
         </div>
 
-        {/* Caption below viewer */}
+        {/* Caption */}
         {(title || description) && (
           <div className="px-4 py-3 border-t border-white/[0.06]">
             {title && (
@@ -101,16 +135,15 @@ export default function PCBViewer({ url, title, description }) {
         )}
       </div>
 
-      {/* Fullscreen overlay */}
+      {/* Fullscreen overlay - rendered in portal-like fashion */}
       {isFullscreen && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex flex-col"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsFullscreen(false);
-          }}
+          className="fixed inset-0 flex flex-col"
+          style={{ zIndex: 99999, background: 'rgba(0,0,0,0.94)' }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08]">
+          {/* Header bar - not part of canvas click area */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] shrink-0"
+               style={{ pointerEvents: 'auto' }}>
             <div>
               {title && (
                 <p className="text-lg font-semibold text-white/90" style={{ fontFamily: 'Syne, sans-serif' }}>
@@ -122,26 +155,31 @@ export default function PCBViewer({ url, title, description }) {
               )}
             </div>
             <button
-              onClick={() => setIsFullscreen(false)}
-              className="px-4 py-2 text-sm font-mono bg-white/5 border border-white/15
-                         rounded-lg text-white/60 hover:text-white hover:border-white/30
-                         transition-all cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsFullscreen(false);
+              }}
+              className="px-4 py-2 text-sm font-mono bg-white/10 border border-white/20
+                         rounded-lg text-white/80 hover:text-white hover:bg-white/15
+                         hover:border-white/30 transition-all cursor-pointer"
             >
               ✕ Close
             </button>
           </div>
 
-          {/* Full viewer */}
+          {/* Canvas area */}
           <div className="flex-1 cursor-grab active:cursor-grabbing">
-            <Canvas dpr={[1, 2]}>
+            <Canvas dpr={[1, 2]} camera={{ fov: 40, near: 0.01, far: 5000 }}>
               <Scene url={url} autoRotate={false} />
             </Canvas>
           </div>
 
-          {/* Footer hint */}
-          <div className="px-6 py-3 border-t border-white/[0.06] text-center">
+          {/* Footer */}
+          <div className="px-6 py-3 border-t border-white/[0.06] text-center shrink-0"
+               style={{ pointerEvents: 'none' }}>
             <span className="text-xs font-mono text-white/25">
-              Drag to rotate · Scroll to zoom · Right-click to pan · Click outside to close
+              Drag to rotate · Scroll to zoom · Right-click to pan · Esc to close
             </span>
           </div>
         </div>
