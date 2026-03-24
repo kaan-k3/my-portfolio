@@ -1,73 +1,81 @@
-import { useState, useRef, useEffect, Suspense } from 'react';
-import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
+import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 
-function PCBModel({ url, autoRotate }) {
+function PCBModel({ url, interactive }) {
   const scene = useLoader(VRMLLoader, url);
-  const groupRef = useRef();
   const { camera } = useThree();
+  const controlsRef = useRef();
 
-  // Auto-fit camera to model bounds on load
   useEffect(() => {
     if (!scene) return;
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
-    const dist = maxDim * 2.2;
-    camera.position.set(center.x + dist * 0.5, center.y + dist * 0.6, center.z + dist);
+    // Position camera at a nice isometric-ish angle, close in
+    const dist = maxDim * 1.4;
+    camera.position.set(center.x + dist * 0.3, center.y + dist * 0.8, center.z + dist * 0.5);
     camera.lookAt(center);
-    camera.near = 0.01;
-    camera.far = dist * 10;
+    camera.near = 0.001;
+    camera.far = dist * 20;
     camera.updateProjectionMatrix();
   }, [scene, camera]);
 
-  useFrame((_, delta) => {
-    if (autoRotate && groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.15;
-    }
-  });
-
   return (
-    <Center>
-      <group ref={groupRef}>
+    <>
+      <Center>
         <primitive object={scene} />
-      </group>
-    </Center>
+      </Center>
+      {interactive && (
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={0.1}
+          maxDistance={500}
+        />
+      )}
+    </>
   );
 }
 
 function LoadingIndicator() {
-  const meshRef = useRef();
-  useFrame((_, delta) => {
-    if (meshRef.current) meshRef.current.rotation.z += delta * 2;
-  });
   return (
-    <mesh ref={meshRef}>
-      <ringGeometry args={[0.3, 0.4, 24]} />
-      <meshBasicMaterial color="#7dd3fc" opacity={0.4} transparent />
+    <mesh>
+      <ringGeometry args={[0.15, 0.2, 24]} />
+      <meshBasicMaterial color="#7dd3fc" opacity={0.3} transparent />
     </mesh>
   );
 }
 
-function Scene({ url, autoRotate }) {
+// Static thumbnail - no orbit controls, no interaction
+function StaticScene({ url }) {
   return (
     <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[5, 8, 5]} intensity={1.0} />
-      <directionalLight position={[-3, 4, -3]} intensity={0.4} />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[5, 10, 5]} intensity={1.0} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
       <Suspense fallback={<LoadingIndicator />}>
-        <PCBModel url={url} autoRotate={autoRotate} />
+        <PCBModel url={url} interactive={false} />
       </Suspense>
-      <OrbitControls
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        minDistance={0.5}
-        maxDistance={500}
-      />
+    </>
+  );
+}
+
+// Interactive fullscreen scene
+function InteractiveScene({ url }) {
+  return (
+    <>
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[5, 10, 5]} intensity={1.0} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
+      <Suspense fallback={<LoadingIndicator />}>
+        <PCBModel url={url} interactive={true} />
+      </Suspense>
     </>
   );
 }
@@ -75,7 +83,19 @@ function Scene({ url, autoRotate }) {
 export default function PCBViewer({ url, title, description }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Close fullscreen on Escape key
+  const openFullscreen = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFullscreen(true);
+  }, []);
+
+  const closeFullscreen = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFullscreen(false);
+  }, []);
+
+  // Escape key to close
   useEffect(() => {
     if (!isFullscreen) return;
     const handleKey = (e) => {
@@ -85,38 +105,41 @@ export default function PCBViewer({ url, title, description }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [isFullscreen]);
 
+  // Lock body scroll when fullscreen
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isFullscreen]);
+
   return (
     <>
-      {/* Inline preview */}
-      <div className="rounded-xl border border-white/10 overflow-hidden bg-black/30">
-        <div
-          className="relative w-full cursor-grab active:cursor-grabbing"
-          style={{ height: '320px' }}
-        >
-          <Canvas dpr={[1, 2]} camera={{ fov: 40, near: 0.01, far: 5000 }}>
-            <Scene url={url} autoRotate={true} />
+      {/* Static thumbnail preview */}
+      <div
+        className="rounded-xl border border-white/10 overflow-hidden bg-black/30
+                   cursor-pointer group transition-all hover:border-white/20"
+        onClick={openFullscreen}
+      >
+        <div className="relative w-full" style={{ height: '280px' }}>
+          <Canvas
+            dpr={[1, 2]}
+            camera={{ fov: 35, near: 0.001, far: 5000 }}
+            style={{ pointerEvents: 'none' }}
+          >
+            <StaticScene url={url} />
           </Canvas>
 
-          {/* Expand button - pointer-events ensures it's clickable above canvas */}
-          <div className="absolute top-3 right-3 z-20" style={{ pointerEvents: 'auto' }}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFullscreen(true);
-              }}
-              className="px-3 py-1.5 text-xs font-mono
-                         bg-black/70 border border-white/15 rounded-lg text-white/60
-                         hover:text-white hover:border-white/30 transition-all
-                         backdrop-blur-sm cursor-pointer"
-            >
-              ⛶ Expand
-            </button>
-          </div>
-
-          {/* Drag hint */}
-          <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/25 select-none z-20"
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all
+                          flex items-center justify-center opacity-0 group-hover:opacity-100"
                style={{ pointerEvents: 'none' }}>
-            Drag to rotate · Scroll to zoom
+            <span className="px-4 py-2 text-sm font-mono bg-black/70 border border-white/20
+                           rounded-lg text-white/80 backdrop-blur-sm">
+              Click to interact in 3D
+            </span>
           </div>
         </div>
 
@@ -135,15 +158,14 @@ export default function PCBViewer({ url, title, description }) {
         )}
       </div>
 
-      {/* Fullscreen overlay - rendered in portal-like fashion */}
+      {/* Fullscreen interactive overlay */}
       {isFullscreen && (
         <div
           className="fixed inset-0 flex flex-col"
-          style={{ zIndex: 99999, background: 'rgba(0,0,0,0.94)' }}
+          style={{ zIndex: 99999, background: 'rgba(0,0,0,0.96)' }}
         >
-          {/* Header bar - not part of canvas click area */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] shrink-0"
-               style={{ pointerEvents: 'auto' }}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] shrink-0">
             <div>
               {title && (
                 <p className="text-lg font-semibold text-white/90" style={{ fontFamily: 'Syne, sans-serif' }}>
@@ -155,11 +177,7 @@ export default function PCBViewer({ url, title, description }) {
               )}
             </div>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsFullscreen(false);
-              }}
+              onClick={closeFullscreen}
               className="px-4 py-2 text-sm font-mono bg-white/10 border border-white/20
                          rounded-lg text-white/80 hover:text-white hover:bg-white/15
                          hover:border-white/30 transition-all cursor-pointer"
@@ -168,10 +186,10 @@ export default function PCBViewer({ url, title, description }) {
             </button>
           </div>
 
-          {/* Canvas area */}
+          {/* Interactive 3D canvas */}
           <div className="flex-1 cursor-grab active:cursor-grabbing">
-            <Canvas dpr={[1, 2]} camera={{ fov: 40, near: 0.01, far: 5000 }}>
-              <Scene url={url} autoRotate={false} />
+            <Canvas dpr={[1, 2]} camera={{ fov: 35, near: 0.001, far: 5000 }}>
+              <InteractiveScene url={url} />
             </Canvas>
           </div>
 
