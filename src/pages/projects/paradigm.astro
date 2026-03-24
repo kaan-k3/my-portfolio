@@ -1,5 +1,6 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import PCBViewer from "../../components/PCBViewer.jsx";
 ---
 
 <ProjectLayout
@@ -9,76 +10,175 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
   logoAlt="Paradigm Engineering"
   logoClass="invert brightness-200"
   context="Team"
-  tags={["STM32", "KiCad", "C", "PCB Design", "FDCAN", "JTAG", "PWM"]}
+  tags={["STM32", "KiCad", "Embedded C", "PCB Design", "FDCAN", "JTAG", "PWM", "Power Electronics"]}
 >
 
-  <!-- Overview -->
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
     <p class="text-white/55 leading-relaxed max-w-2xl">
-      Paradigm Engineering is a competitive engineering design team at Memorial University. 
-      As a member of the electrical team, I design and validate the vehicle's embedded 
-      electronics — from PCB schematic capture and layout to firmware development and 
-      hardware bring-up.
+      Paradigm Engineering is a competitive engineering design team at Memorial University 
+      that builds an autonomous vehicle platform. I joined the electrical team to take 
+      ownership of the vehicle's core embedded electronics — responsible for schematic 
+      capture, PCB layout, firmware development, and hardware validation from first 
+      prototype through integration testing.
     </p>
   </section>
 
-  <!-- What I Built -->
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
     <div class="space-y-8">
 
+      <!-- Vehicle Control PCB -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Vehicle Control PCB</h3>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Vehicle Control Unit (VCU) PCB</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">STM32</span>
+            <span class="tech-tag">KiCad</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Designed a revised STM32-based vehicle control board in KiCad with USB-UART, 
-          ST-LINK/JTAG debug interfaces, FDCAN bus, voltage regulation, decoupling networks, 
-          and test points — reducing PCB footprint and improving signal/power integrity 
-          through optimized routing and power distribution.
+          Designed an <strong class="text-white/70">STM32-based vehicle control PCB</strong> in 
+          KiCad that serves as the vehicle's central control unit, responsible for managing 
+          braking and steering actuator commands from the onboard compute platform.
         </p>
-        <!-- Add your images here like this: -->
-        <!-- <div class="grid sm:grid-cols-2 gap-4">
-          <img src="/projects/paradigm/control-pcb-front.jpg" alt="Control PCB front" class="rounded-lg border border-white/10 w-full" />
-          <img src="/projects/paradigm/control-pcb-schematic.jpg" alt="Control PCB schematic" class="rounded-lg border border-white/10 w-full" />
-        </div> -->
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Add photos: /public/projects/paradigm/control-pcb.jpg
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Integrated <strong class="text-white/70">USB-UART</strong> for serial diagnostics, 
+            <strong class="text-white/70">ST-LINK/JTAG</strong> for on-board debugging and 
+            flash programming, and <strong class="text-white/70">FDCAN</strong> for communication 
+            with other vehicle subsystems over the CAN bus.
+          </li>
+          <li>
+            Included <strong class="text-white/70">on-board voltage regulation</strong> with 
+            decoupling networks sized to the MCU's transient current requirements, along with 
+            clearly labeled <strong class="text-white/70">test points</strong> on all power rails 
+            and communication lines for faster bring-up and debug.
+          </li>
+          <li>
+            Reduced overall <strong class="text-white/70">PCB footprint</strong> compared to the 
+            previous revision by optimizing component placement and trace routing, improving both 
+            signal integrity and power delivery under the vehicle's space constraints.
+          </li>
+        </ul>
+
+        <div class="mb-4">
+          <PCBViewer
+            client:only="react"
+            url="/projects/paradigm/control-pcb.wrl"
+            title="Vehicle Control Unit (VCU)"
+            description="STM32 MCU · USB-UART · ST-LINK/JTAG · FDCAN · Voltage Regulation · Test Points"
+          />
         </div>
       </div>
 
+      <!-- Power Distribution PCB -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Power Distribution PCB</h3>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Power Distribution Board</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">KiCad</span>
+            <span class="tech-tag">Power Electronics</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Designed a multi-rail power distribution board implementing switching regulators, 
-          filtering networks, and feedback control circuitry to generate regulated 48V, 24V, 
-          12V, 5V, and 3.3V rails for embedded control electronics, steering systems, and 
-          auxiliary subsystems.
+          Designed a <strong class="text-white/70">multi-rail power distribution PCB</strong> that 
+          converts the vehicle's main battery supply into the regulated voltages required by 
+          every subsystem on the platform — from the Jetson compute module running the 
+          autonomy stack down to the low-power embedded controllers and sensor buses.
         </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Add photos: /public/projects/paradigm/power-pcb.jpg
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Implemented <strong class="text-white/70">switching regulators</strong> with input/output 
+            filtering networks and feedback control circuitry to generate stable 
+            <strong class="text-white/70">48V, 24V, 12V, 5V, and 3.3V rails</strong>, each sized 
+            for the current draw of its downstream loads (steering servos, compute, sensors, MCUs).
+          </li>
+          <li>
+            Incorporated <strong class="text-white/70">reverse polarity protection</strong> and 
+            fused outputs on high-current rails to guard against wiring faults during integration, 
+            reducing the risk of damage to downstream electronics during field assembly.
+          </li>
+          <li>
+            Routed high-current <strong class="text-white/70">power traces</strong> with widths 
+            calculated for the expected thermal load, and placed all switching components to 
+            minimize loop area and reduce conducted EMI on sensitive analog and communication lines.
+          </li>
+        </ul>
+
+        <div class="mb-4">
+          <PCBViewer
+            client:only="react"
+            url="/projects/paradigm/power-pcb.wrl"
+            title="Power Distribution Board"
+            description="48V · 24V · 12V · 5V · 3.3V Rails · Switching Regulators · Fused Outputs"
+          />
         </div>
       </div>
 
+      <!-- Embedded Firmware -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Embedded Firmware</h3>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Embedded Firmware — Brake Control</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Embedded C</span>
+            <span class="tech-tag">STM32</span>
+            <span class="tech-tag">PWM</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Developed embedded C firmware for STM32 microcontrollers implementing PWM-based 
-          motor braking control, enabling real-time actuator response and controlled braking 
-          behavior during subsystem integration and vehicle testing.
+          Wrote the <strong class="text-white/70">embedded C firmware</strong> running on the VCU's 
+          STM32 that handles real-time braking commands from the autonomy stack.
         </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Implemented <strong class="text-white/70">PWM-based motor braking control</strong> with 
+            configurable duty cycle mapping, allowing the Jetson compute module to command 
+            proportional braking force through a simple CAN message rather than a direct 
+            analog signal.
+          </li>
+          <li>
+            Tuned <strong class="text-white/70">actuator response timing</strong> during bench 
+            testing to ensure the brake actuator reached target force within the system's 
+            real-time control loop requirements.
+          </li>
+        </ul>
+        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono">
           Add photos or code snippets here
         </div>
       </div>
 
+      <!-- Board Bring-Up -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Board Bring-Up & Testing</h3>
-        <p class="text-sm text-white/50 leading-relaxed">
-          Performed PCB bring-up and electrical validation of custom hardware using 
-          oscilloscopes and multimeters to verify voltage rails, debug communication 
-          interfaces, and troubleshoot signal integrity issues during embedded hardware 
-          integration and testing.
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Board Bring-Up & Validation</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Oscilloscope</span>
+            <span class="tech-tag">Multimeter</span>
+          </div>
+        </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Performed <strong class="text-white/70">first-power-on and electrical validation</strong> 
+          for each custom board before handing it off for integration with the rest of the vehicle.
         </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed">
+          <li>
+            Verified all <strong class="text-white/70">voltage rails</strong> under no-load and 
+            loaded conditions using a bench supply and multimeter, checking for correct output 
+            voltage, ripple, and thermal behavior at the switching regulator stage.
+          </li>
+          <li>
+            Used an <strong class="text-white/70">oscilloscope</strong> to probe FDCAN, UART, and 
+            JTAG lines during communication tests, identifying and resolving signal integrity 
+            issues (ringing, reflections) caused by trace impedance mismatches on the first 
+            board revision.
+          </li>
+          <li>
+            Documented all <strong class="text-white/70">bring-up procedures</strong> and failure 
+            modes encountered so that future board revisions could be validated faster by other 
+            team members.
+          </li>
+        </ul>
       </div>
     </div>
   </section>

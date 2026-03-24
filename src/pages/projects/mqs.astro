@@ -8,178 +8,315 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
   logo="/logos/mqs.png"
   logoAlt="MUN Quant Society"
   context="Team"
-  tags={["Python", "PostgreSQL", "PyTorch", "FinBERT", "GCP", "GitHub Actions", "FMP API", "pandas", "NumPy"]}
+  tags={["Python", "PostgreSQL", "PyTorch", "Hugging Face Transformers", "GCP", "GitHub Actions", "pandas", "NumPy", "scikit-learn"]}
 >
 
+  <!-- Overview -->
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
     <p class="text-white/55 leading-relaxed max-w-2xl mb-4">
-      As Director of Data & Infrastructure, I lead a team of 11 contributors building the 
-      society's end-to-end quantitative trading platform. The system supports multi-portfolio 
-      live trading with concurrent execution, an event-driven backtesting engine, a real-time 
-      NLP sentiment pipeline, and a full risk management layer — all backed by PostgreSQL 
-      and deployed on GCP.
+      I lead a team of <strong class="text-white/75">11 contributors</strong> as Director of Data & Infrastructure 
+      for the MUN Quant Society. In this role I am responsible for the design, development, and deployment 
+      of the society's full-stack quantitative trading platform. The system handles everything from 
+      live market data ingestion and strategy execution to sentiment analysis and risk management, 
+      all running on <strong class="text-white/75">PostgreSQL</strong> and deployed through <strong class="text-white/75">GCP</strong>.
     </p>
     <p class="text-white/55 leading-relaxed max-w-2xl">
-      The codebase spans approximately 1,600 lines across core infrastructure, with 
-      extensive workflow documentation, a pytest test suite, and CI/CD via GitHub Actions. 
-      It is open source and actively maintained.
+      Below is a breakdown of each major system I built or directed the development of, 
+      along with the technical decisions, outcomes, and tools involved.
     </p>
     <a href="https://github.com/MUNQuantSociety/MQSMaster" target="_blank" class="detail-link mt-3 inline-block">View on GitHub →</a>
   </section>
 
+  <!-- System Architecture Diagram -->
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-6">System Architecture</h2>
+    <div class="glass-card p-6 mb-4">
+      <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+        Add architecture diagram: /public/projects/mqs/architecture.png
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Trading Engine -->
+  <section class="mb-12">
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
     <div class="space-y-8">
 
-      <!-- Live Trading Engine -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Live Trading Engine</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">src/live_trading/ · Concurrent multi-portfolio execution</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          The live trading engine runs each portfolio strategy in its own thread with a 
-          configurable poll interval. Each cycle fetches an atomic portfolio state snapshot 
-          from the database (cash, positions, market data), updates technical indicators, 
-          builds a StrategyContext, and calls the strategy's OnData method to generate 
-          trade signals. A circuit breaker pattern halts individual portfolio threads after 
-          consecutive failures to prevent cascading issues across strategies.
-        </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">Threading</span>
-          <span class="tech-tag">Circuit Breaker</span>
-          <span class="tech-tag">Connection Pooling</span>
-          <span class="tech-tag">FMP API</span>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Live Trading Engine</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">Threading</span>
+            <span class="tech-tag">PostgreSQL</span>
+          </div>
         </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Architected a <strong class="text-white/70">concurrent multi-portfolio trading engine</strong> 
+          to allow the society to run multiple strategies at once without them interfering with each 
+          other. Each portfolio runs in its own thread with a configurable polling interval, pulling 
+          the latest market data and portfolio state before generating trade signals.
+        </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Built <strong class="text-white/70">atomic state queries</strong> using PostgreSQL CTEs 
+            so that every strategy sees a consistent snapshot of its cash and positions at the time 
+            of each decision, preventing race conditions across concurrent threads.
+          </li>
+          <li>
+            Implemented a <strong class="text-white/70">circuit breaker pattern</strong> that tracks 
+            consecutive failures per portfolio and automatically halts any strategy thread after 5 
+            failures, isolating problems so one broken strategy cannot cascade into others.
+          </li>
+          <li>
+            Designed a <strong class="text-white/70">thread-safe connection pool</strong> 
+            (minconn=1, maxconn=6) to manage concurrent database access efficiently across all 
+            portfolio threads without connection exhaustion.
+          </li>
+        </ul>
       </div>
 
-      <!-- Backtesting Framework -->
+      <!-- Backtesting -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Backtesting Framework</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">src/backtest/ · Event-driven + vectorized backtesting</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          The backtesting engine supports both event-driven and vectorized modes. The 
-          event-driven BacktestRunner simulates an event loop — grouping historical data by 
-          timestamp, applying configurable slippage, and running each strategy's signal 
-          generation with a sliding lookback window. The BacktestExecutor simulates trade 
-          execution with a full margin model supporting long/short positions and configurable 
-          leverage. Generates comprehensive reports: trade logs, performance timeseries, 
-          Sharpe ratio, max drawdown, rolling statistics (30D/90D/180D), monthly returns, 
-          and benchmark comparisons against buy-and-hold.
-        </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">Event-Driven Simulation</span>
-          <span class="tech-tag">Vectorized Backtesting</span>
-          <span class="tech-tag">Margin Model</span>
-          <span class="tech-tag">Sharpe / Drawdown</span>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Backtesting Framework</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">pandas</span>
+            <span class="tech-tag">NumPy</span>
+          </div>
         </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Developed a <strong class="text-white/70">backtesting engine</strong> that allows the 
+          team to validate any trading strategy against historical data before deploying it live. 
+          Supports both an event-driven mode (simulates real market conditions bar-by-bar) and a 
+          faster vectorized mode for rapid iteration.
+        </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Built the <strong class="text-white/70">BacktestRunner</strong>, an event-driven 
+            simulator that groups historical data by timestamp, applies configurable slippage 
+            models, and feeds each strategy a sliding lookback window to replicate how data 
+            arrives in real-time trading.
+          </li>
+          <li>
+            Created a <strong class="text-white/70">BacktestExecutor</strong> with a full margin 
+            model supporting long and short positions with configurable leverage (default 2x), 
+            mirroring live trading constraints so backtests produce realistic results.
+          </li>
+          <li>
+            Automated <strong class="text-white/70">12 report types per backtest run</strong>: 
+            trade logs, performance timeseries, Sharpe ratio, max drawdown, rolling statistics 
+            (30/90/180-day windows), monthly return breakdowns, benchmark comparisons against 
+            buy-and-hold, and portfolio risk analytics including correlation matrices.
+          </li>
+        </ul>
       </div>
 
-      <!-- Strategy API & Indicators -->
+      <!-- Strategy API -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Strategy API & Indicator System</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">src/portfolios/ · 4 live strategies, 7 built-in indicators</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Strategies inherit from a BasePortfolio abstract class that provides a clean 
-          StrategyContext API with MarketData access (OHLCV, history, existence checks), 
-          PortfolioManager (cash, positions, weights), and buy/sell methods with confidence-weighted 
-          position sizing. The indicator system uses a dynamic factory (importlib) with 
-          automatic warmup from historical data. Built-in indicators include SMA, RSI, RMI, 
-          ATR, Displaced Moving Average, Rate of Change, and VWAP. Four active strategies: 
-          VolMomentum, MomentumStrategy, RegimeAdaptiveStrategy, and TrendRotateStrategy.
-        </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">Abstract Base Pattern</span>
-          <span class="tech-tag">Dynamic Factory</span>
-          <span class="tech-tag">SMA / RSI / ATR / VWAP</span>
-          <span class="tech-tag">Confidence Sizing</span>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Strategy API & Indicator System</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">OOP</span>
+          </div>
         </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Designed a <strong class="text-white/70">plug-and-play strategy framework</strong> that 
+          lets any team member write a new trading strategy in under 50 lines of code, without 
+          needing to understand the underlying database, execution, or data infrastructure.
+        </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Built an <strong class="text-white/70">abstract BasePortfolio class</strong> that 
+            provides a clean StrategyContext API with access to market data (OHLCV, historical 
+            lookback), portfolio state (cash, positions, weights), and simple buy/sell methods 
+            with confidence-weighted position sizing.
+          </li>
+          <li>
+            Developed a <strong class="text-white/70">dynamic indicator factory</strong> using 
+            Python's importlib, so indicators are registered by name and automatically loaded at 
+            runtime. Created <strong class="text-white/70">7 built-in indicators</strong>: SMA, 
+            RSI, Relative Momentum Index, ATR, Displaced Moving Average, Rate of Change, and VWAP, 
+            each with automatic warmup from historical data.
+          </li>
+          <li>
+            Enabled the team to deploy <strong class="text-white/70">4 live strategies</strong>: 
+            VolMomentum, MomentumStrategy, RegimeAdaptiveStrategy, and TrendRotateStrategy, all 
+            running concurrently through the live engine.
+          </li>
+        </ul>
       </div>
 
       <!-- NLP Pipeline -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">NLP Sentiment Analysis Pipeline</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">NLP/ · FinBERT · Multi-source scraping · 5-minute daemon</p>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">NLP Sentiment Analysis Pipeline</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">PyTorch</span>
+            <span class="tech-tag">Hugging Face</span>
+            <span class="tech-tag">FinBERT</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          A daemon-based pipeline that scrapes financial news from multiple sources (FMP, 
-          Yahoo Finance, Finviz, Alpha Vantage) every 5 minutes in batched ticker groups to 
-          avoid rate limiting. Articles are deduplicated, merged into per-ticker CSVs, and 
-          processed through a FinBERT transformer model for sentiment scoring (-1.0 to 1.0). 
-          Results are stored in a PostgreSQL news_sentiment table for real-time access by 
-          trading strategies. Includes visualization notebooks for sentiment trend analysis.
+          Built and deployed a <strong class="text-white/70">real-time news sentiment pipeline</strong> 
+          that scrapes financial articles, scores them using a fine-tuned transformer model, and 
+          feeds the results directly into the trading strategies for signal enrichment.
         </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">FinBERT</span>
-          <span class="tech-tag">PyTorch</span>
-          <span class="tech-tag">Transformers</span>
-          <span class="tech-tag">Web Scraping</span>
-          <span class="tech-tag">Daemon Process</span>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Developed a <strong class="text-white/70">multi-source news scraper</strong> that pulls 
+            articles from FMP, Yahoo Finance, Finviz, and Alpha Vantage. Articles are deduplicated, 
+            merged into per-ticker CSVs, and processed in <strong class="text-white/70">batched 
+            ticker groups every 5 minutes</strong> via a daemon process, with staggered 2-minute 
+            intervals between batches to respect API rate limits.
+          </li>
+          <li>
+            Fine-tuned the <strong class="text-white/70">FinBERT model</strong> (yiyanghkust/finbert-tone) 
+            on a combined dataset of Financial PhraseBank and FiQA sentiment data to improve accuracy 
+            on real financial news. Trained using Hugging Face Trainer with 
+            <strong class="text-white/70">AdamW optimizer</strong>, a learning rate of 
+            <strong class="text-white/70">2e-5</strong>, linear learning rate scheduler with 
+            <strong class="text-white/70">500 warmup steps</strong>, batch size of 18, 
+            <strong class="text-white/70">5 epochs</strong>, and weight decay of 0.01. 
+            Evaluated using weighted F1, precision, recall, and accuracy metrics per epoch, 
+            with early stopping based on validation loss.
+          </li>
+          <li>
+            Designed the sentiment scoring to output a value from 
+            <strong class="text-white/70">-1.0 (bearish) to +1.0 (bullish)</strong> per article, 
+            computed as the difference between positive and negative class probabilities from the 
+            model's softmax output. Daily averages are precomputed and stored in a PostgreSQL 
+            news_sentiment table for real-time access by any strategy.
+          </li>
+        </ul>
+        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono mt-4">
+          Add screenshots: sentiment dashboard, training curves, example scores
         </div>
       </div>
 
-      <!-- Data Layer -->
+      <!-- Data Pipeline -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Data Pipeline & Database Layer</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">src/common/database/ · src/orchestrator/ · PostgreSQL</p>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Data Pipeline & Database</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag">FMP API</span>
+            <span class="tech-tag">SQL</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          The data layer centers on a thread-safe MQSDBConnector with a PostgreSQL connection 
-          pool (minconn=1, maxconn=6). The FMPMarketData client implements rate limiting 
-          (3,000 req/min with sliding window), retry logic (6 attempts), and timeout handling. 
-          The backfill service generates business day ranges, batches API calls, caches to CSV, 
-          and bulk-inserts with conflict handling. The schema includes five core tables: 
-          market_data, cash_equity_book, positions_book, trade_execution_logs, and pnl_book — 
-          with atomic state queries using CTEs for consistent portfolio snapshots.
+          Designed and built the <strong class="text-white/70">data infrastructure</strong> that 
+          every other system in the platform depends on, from market data ingestion to trade 
+          record-keeping.
         </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">PostgreSQL</span>
-          <span class="tech-tag">Connection Pool</span>
-          <span class="tech-tag">Rate Limiting</span>
-          <span class="tech-tag">Bulk Insert</span>
-          <span class="tech-tag">CTE Queries</span>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Built the <strong class="text-white/70">FMPMarketData client</strong> with a 
+            thread-safe sliding-window rate limiter (3,000 requests/minute), automatic retry 
+            logic (6 attempts with backoff), timeout handling (10s), and internet connectivity 
+            checks to ensure reliable data ingestion across all threads.
+          </li>
+          <li>
+            Developed a <strong class="text-white/70">backfill service</strong> that generates 
+            business day ranges, batches API calls (3 days per request), caches results to CSV, 
+            and bulk-inserts into PostgreSQL with conflict handling to prevent duplicate records.
+          </li>
+          <li>
+            Defined a <strong class="text-white/70">5-table database schema</strong>: 
+            market_data (OHLCV), cash_equity_book (portfolio balances), positions_book (holdings), 
+            trade_execution_logs (fill records with slippage tracking), and pnl_book (portfolio 
+            valuation history). All portfolio state reads use CTE-based atomic queries for consistency.
+          </li>
+        </ul>
+        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono mt-4">
+          Add screenshots: database schema diagram, PgAdmin tables
         </div>
       </div>
 
       <!-- Risk Management -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Risk Management & Capital Allocation</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">src/risk_manager/ · Daily rebalancing · Master portfolio model</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Capital flows through a master portfolio (ID: 0) that distributes to strategy 
-          portfolios via weighted daily rebalancing. The DailyAllocator calculates each 
-          strategy's total value (cash + marked-to-market positions), computes target 
-          allocations, and executes internal transfers as paired trade_execution_log entries. 
-          Supports external capital add/withdraw operations with balance validation. All 
-          transfers are atomic database transactions.
-        </p>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="tech-tag">Daily Rebalancing</span>
-          <span class="tech-tag">Weighted Allocation</span>
-          <span class="tech-tag">Atomic Transactions</span>
-          <span class="tech-tag">CLI Tools</span>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Risk Management & Capital Allocation</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">PostgreSQL</span>
+          </div>
         </div>
-      </div>
-
-      <!-- OMS Design -->
-      <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Order Management System (In Progress)</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">docs/OMS_DESIGN.md · VWAP / TWAP algorithms</p>
-        <p class="text-sm text-white/50 leading-relaxed">
-          Designing an OMS layer between strategy intent and market execution. Replaces the 
-          current fire-and-forget model with parent/child order lifecycles, VWAP and TWAP 
-          execution algorithms for slicing large orders over time, an AlgoScheduler for 
-          timed child order dispatch, and an OrderTracker for full lifecycle visibility 
-          (pending, partially filled, complete, cancelled).
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Built the <strong class="text-white/70">capital management layer</strong> that controls 
+          how money flows between the master account and individual strategy portfolios, ensuring 
+          each strategy gets its target allocation and no single strategy can over-concentrate risk.
         </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Implemented a <strong class="text-white/70">DailyAllocator</strong> that rebalances 
+            capital across strategy portfolios every day based on configurable target weights 
+            (e.g. 30%/30%/40%). The allocator calculates each portfolio's total value 
+            (cash + marked-to-market positions), compares against target, and executes internal 
+            transfers as paired database entries.
+          </li>
+          <li>
+            Created a <strong class="text-white/70">CLI-based capital management tool</strong> for 
+            adding and withdrawing funds from the master portfolio, with balance validation and 
+            full audit logging through the trade_execution_logs table.
+          </li>
+          <li>
+            Designed all capital transfers as <strong class="text-white/70">atomic database 
+            transactions</strong>, ensuring that if any step fails mid-transfer, no partial 
+            state is left behind.
+          </li>
+        </ul>
       </div>
 
-      <!-- CI/CD & Testing -->
+      <!-- OMS -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">CI/CD & Testing</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">.github/workflows/ · tests/ · pytest</p>
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">Order Management System (In Progress)</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">System Design</span>
+            <span class="tech-tag">Python</span>
+          </div>
+        </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Currently designing an <strong class="text-white/70">Order Management System</strong> to 
+          replace the platform's fire-and-forget execution model with a proper order lifecycle. 
+          The goal is to reduce market impact on large orders by slicing them over time using 
+          execution algorithms.
+        </p>
+        <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
+          <li>
+            Designed a <strong class="text-white/70">parent/child order architecture</strong> where 
+            a strategy's intent (e.g. "buy AAPL with 80% confidence") becomes a parent order that 
+            is broken into smaller child orders dispatched over time.
+          </li>
+          <li>
+            Specifying <strong class="text-white/70">VWAP and TWAP execution algorithms</strong> 
+            that schedule child orders based on volume profiles and time intervals, along with 
+            an OrderTracker for full lifecycle visibility (pending, partially filled, complete, 
+            cancelled).
+          </li>
+        </ul>
+      </div>
+
+      <!-- CI/CD -->
+      <div class="glass-card p-6">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-display font-600 text-white/85">CI/CD & Testing</h3>
+          <div class="flex gap-1.5">
+            <span class="tech-tag">GitHub Actions</span>
+            <span class="tech-tag">pytest</span>
+          </div>
+        </div>
         <p class="text-sm text-white/50 leading-relaxed">
-          GitHub Actions workflows for automated testing on push. The test suite covers 
-          backtest engine execution, strategy API endpoints, trade execution, vectorized 
-          backtesting, and indicator correctness (e.g. Relative Momentum Index). 
-          Configuration-driven test fixtures with conftest.py for database mocking.
+          Set up <strong class="text-white/70">GitHub Actions CI/CD pipelines</strong> for 
+          automated testing on every push. Wrote and maintained a 
+          <strong class="text-white/70">pytest test suite</strong> covering the backtest engine, 
+          strategy API endpoints, trade execution, vectorized backtesting, and indicator 
+          correctness. Configured test fixtures with database mocking so tests run without 
+          needing a live PostgreSQL connection.
         </p>
       </div>
     </div>
