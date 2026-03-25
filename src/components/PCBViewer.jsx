@@ -1,32 +1,16 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
-import { Canvas, useLoader, useThree } from '@react-three/fiber';
-import { OrbitControls, Center, Bounds, useBounds } from '@react-three/drei';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { OrbitControls, Center, Bounds, useBounds, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-// Try GLB first, fall back to VRML
-function PCBModel({ url }) {
-  const isGLB = url.endsWith('.glb') || url.endsWith('.gltf');
-  
-  if (isGLB) {
-    const { useGLTF } = require('@react-three/drei');
-    const { scene } = useGLTF(url);
-    return <primitive object={scene} />;
-  }
-  
-  const { VRMLLoader } = require('three/examples/jsm/loaders/VRMLLoader.js');
-  const scene = useLoader(VRMLLoader, url);
-  return <primitive object={scene} />;
-}
-
-// Separate components for GLB and VRML to avoid conditional hook issues
 function GLBModel({ url }) {
-  const { useGLTF } = require('@react-three/drei');
   const { scene } = useGLTF(url);
   return <primitive object={scene} />;
 }
 
 function VRMLModel({ url }) {
-  const { VRMLLoader } = require('three/examples/jsm/loaders/VRMLLoader.js');
   const scene = useLoader(VRMLLoader, url);
   return <primitive object={scene} />;
 }
@@ -44,7 +28,6 @@ function FitToView({ children }) {
   return <>{children}</>;
 }
 
-// Static thumbnail
 function StaticPreview({ url }) {
   return (
     <Canvas
@@ -96,7 +79,6 @@ export default function PCBViewer({ url, title, description }) {
 
   return (
     <>
-      {/* Static thumbnail */}
       <div
         className="rounded-xl border border-white/10 overflow-hidden bg-black/40
                    cursor-pointer group transition-all hover:border-white/20"
@@ -121,7 +103,6 @@ export default function PCBViewer({ url, title, description }) {
         )}
       </div>
 
-      {/* Fullscreen modal - starts below nav bar, uses inline styles to guarantee layering */}
       {isOpen && (
         <div style={{
           position: 'fixed',
@@ -134,7 +115,6 @@ export default function PCBViewer({ url, title, description }) {
           display: 'flex',
           flexDirection: 'column',
         }}>
-          {/* Header */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -168,7 +148,6 @@ export default function PCBViewer({ url, title, description }) {
             </button>
           </div>
 
-          {/* 3D Viewer */}
           <div style={{ flex: 1, cursor: 'grab', minHeight: 0 }}>
             <Canvas
               dpr={[1, 1.5]}
@@ -198,7 +177,6 @@ export default function PCBViewer({ url, title, description }) {
             </Canvas>
           </div>
 
-          {/* Footer */}
           <div style={{
             padding: '8px 24px',
             borderTop: '1px solid rgba(255,255,255,0.06)',
