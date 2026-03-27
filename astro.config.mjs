@@ -6,7 +6,20 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://kaankeskindil.com',
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('three/')) return 'vendor-three';
+            if (id.includes('@react-three/')) return 'vendor-r3f';
+          }
+        }
+      }
+    },
+    ssr: {
+      external: ['three', '@react-three/fiber', '@react-three/drei']
+    }
   },
   integrations: [react()]
 });
