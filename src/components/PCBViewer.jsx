@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Center, Bounds, useBounds, useGLTF } from '@react-three/drei';
-import * as THREE from 'three';
-import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 function GLBModel({ url }) {
   const { scene } = useGLTF(url);
@@ -11,7 +8,19 @@ function GLBModel({ url }) {
 }
 
 function VRMLModel({ url }) {
-  const scene = useLoader(VRMLLoader, url);
+  // Dynamic import to avoid bundling VRMLLoader at build time
+  const [scene, setScene] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    import('three/examples/jsm/loaders/VRMLLoader.js').then(({ VRMLLoader }) => {
+      const loader = new VRMLLoader();
+      loader.load(url, (result) => {
+        if (!cancelled) setScene(result);
+      });
+    });
+    return () => { cancelled = true; };
+  }, [url]);
+  if (!scene) return null;
   return <primitive object={scene} />;
 }
 
@@ -144,7 +153,7 @@ export default function PCBViewer({ url, title, description }) {
               onMouseEnter={(e) => { e.target.style.background = 'rgba(255,255,255,0.2)'; }}
               onMouseLeave={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; }}
             >
-              ✕ Close
+              Close
             </button>
           </div>
 
