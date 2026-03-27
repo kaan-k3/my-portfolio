@@ -14,13 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Add swap space
+        run: |
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
       - run: npm run build
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: '--max-old-space-size=4096'
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
