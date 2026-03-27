@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from 'react';
 
-import * as THREE from 'three';
+import { ShaderLib, UniformsUtils, MeshStandardMaterial, ShaderMaterial, Color, BufferGeometry, BufferAttribute } from 'three';
 
 import { Canvas, useFrame } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
@@ -10,11 +10,11 @@ import { degToRad } from 'three/src/math/MathUtils.js';
 import './Beams.css';
 
 function extendMaterial(BaseMaterial, cfg) {
-  const physical = THREE.ShaderLib.physical;
+  const physical = ShaderLib.physical;
   const { vertexShader: baseVert, fragmentShader: baseFrag, uniforms: baseUniforms } = physical;
   const baseDefines = physical.defines ?? {};
 
-  const uniforms = THREE.UniformsUtils.clone(baseUniforms);
+  const uniforms = UniformsUtils.clone(baseUniforms);
 
   const defaults = new BaseMaterial(cfg.material || {});
 
@@ -38,7 +38,7 @@ function extendMaterial(BaseMaterial, cfg) {
     frag = frag.replace(inc, `${inc}\n${code}`);
   }
 
-  const mat = new THREE.ShaderMaterial({
+  const mat = new ShaderMaterial({
     defines: { ...baseDefines },
     uniforms,
     vertexShader: vert,
@@ -154,7 +154,7 @@ const Beams = ({
   const meshRef = useRef(null);
   const beamMaterial = useMemo(
     () =>
-      extendMaterial(THREE.MeshStandardMaterial, {
+      extendMaterial(MeshStandardMaterial, {
         header: `
   varying vec3 vEye;
   varying float vNoise;
@@ -196,7 +196,7 @@ const Beams = ({
         },
         material: { fog: true },
         uniforms: {
-          diffuse: new THREE.Color(...hexToNormalizedRGB('#000000')),
+          diffuse: new Color(...hexToNormalizedRGB('#000000')),
           time: { shared: true, mixed: true, linked: true, value: 0 },
           roughness: 0.3,
           metalness: 0.3,
@@ -223,7 +223,7 @@ const Beams = ({
 };
 
 function createStackedPlanesBufferGeometry(n, width, height, spacing, heightSegments) {
-  const geometry = new THREE.BufferGeometry();
+  const geometry = new BufferGeometry();
   const numVertices = n * (heightSegments + 1) * 2;
   const numFaces = n * heightSegments * 2;
   const positions = new Float32Array(numVertices * 3);
@@ -263,9 +263,9 @@ function createStackedPlanesBufferGeometry(n, width, height, spacing, heightSegm
     }
   }
 
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-  geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+  geometry.setAttribute('position', new BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
+  geometry.setIndex(new BufferAttribute(indices, 1));
   geometry.computeVertexNormals();
   return geometry;
 }
