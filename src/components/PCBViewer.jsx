@@ -1,124 +1,75 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
+import { OrbitControls, Center, Bounds, useBounds } from '@react-three/drei';
+import * as THREE from 'three';
+import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 
-async function loadThreeDeps() {
-  const THREE = await import(/* @vite-ignore */ 'three');
-  const { OrbitControls } = await import(
-    /* @vite-ignore */ 'three/addons/controls/OrbitControls.js'
-  );
-  const { GLTFLoader } = await import(
-    /* @vite-ignore */ 'three/addons/loaders/GLTFLoader.js'
-  );
-  const { VRMLLoader } = await import(
-    /* @vite-ignore */ 'three/addons/loaders/VRMLLoader.js'
-  );
-  return { THREE, OrbitControls, GLTFLoader, VRMLLoader };
-}
-
-function createViewer(container, url, opts) {
-  const { interactive, THREE, OrbitControls, GLTFLoader, VRMLLoader } = opts;
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
-
-  if (!interactive) {
-    renderer.domElement.style.pointerEvents = 'none';
-  }
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    30, container.clientWidth / container.clientHeight, 0.001, 10000
-  );
-  camera.position.set(0, 80, 50);
-
-  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-  const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
-  dir1.position.set(5, 10, 5);
-  scene.add(dir1);
-  const dir2 = new THREE.DirectionalLight(0xffffff, 0.3);
-  dir2.position.set(-3, 6, -3);
-  scene.add(dir2);
-
-  let controls = null;
-  if (interactive) {
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = false;
-    controls.minDistance = 0.1;
-    controls.maxDistance = 1000;
-  }
-
-  const isGLB = url.endsWith('.glb') || url.endsWith('.gltf');
-  const loader = isGLB ? new GLTFLoader() : new VRMLLoader();
-
-  loader.load(url, (result) => {
-    const obj = isGLB ? result.scene : result;
-    const box = new THREE.Box3().setFromObject(obj);
-    const center = box.getCenter(new THREE.Vector3());
-    obj.position.sub(center);
-    scene.add(obj);
-
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const fov = camera.fov * (Math.PI / 180);
-    const margin = interactive ? 1.2 : 1.3;
-    const dist = Math.abs(maxDim / (2 * Math.tan(fov / 2))) * margin;
-    camera.position.set(0, dist * 0.5, dist);
-    camera.lookAt(0, 0, 0);
-    if (controls) {
-      controls.target.set(0, 0, 0);
-      controls.update();
-    }
-  });
-
-  let animId;
-  function animate() {
-    animId = requestAnimationFrame(animate);
-    if (controls) controls.update();
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  const onResize = () => {
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w === 0 || h === 0) return;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  };
-  window.addEventListener('resize', onResize);
-
-  return () => {
-    cancelAnimationFrame(animId);
-    window.removeEventListener('resize', onResize);
-    if (controls) controls.dispose();
-    renderer.dispose();
-    if (container.contains(renderer.domElement)) {
-      container.removeChild(renderer.domElement);
-    }
-  };
-}
-
-function ThreeViewer({ url, interactive = false }) {
-  const ref = useRef(null);
-
+// Uses drei's Bounds to automatically fit camera to content
+function FitToView({ children }) {
+  const bounds = useBounds();
   useEffect(() => {
-    let cleanup = null;
-    let disposed = false;
+    bounds.refresh().clip().fit();
+  }, [bounds]);
+  return <>{children}</>;
+}
 
-    loadThreeDeps().then((deps) => {
-      if (disposed || !ref.current) return;
-      cleanup = createViewer(ref.current, url, { interactive, ...deps });
-    });
+function PCBModel({ url }) {
+  const scene = useLoader(VRMLLoader, url);
+  return <primitive object={scene} />;
+}
 
-    return () => {
-      disposed = true;
-      if (cleanup) cleanup();
-    };
-  }, [url, interactive]);
+// Static thumbnail — fixed camera, no controls
+function StaticPreview({ url }) {
+  return (
+    <Canvas
+      dpr={[1, 2]}
+      camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
+      style={{ pointerEvents: 'none' }}
+    >
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[5, 10, 5]} intensity={1.0} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
+      <Suspense fallback={null}>
+        <Bounds fit clip observe margin={1.3}>
+          <FitToView>
+            <Center>
+              <PCBModel url={url} />
+            </Center>
+          </FitToView>
+        </Bounds>
+      </Suspense>
+    </Canvas>
+  );
+}
 
-  return <div ref={ref} style={{ width: '100%', height: '100%' }} />;
+// Interactive fullscreen scene with orbit controls
+function InteractiveView({ url }) {
+  return (
+    <Canvas
+      dpr={[1, 2]}
+      camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
+    >
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[5, 10, 5]} intensity={1.0} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
+      <Suspense fallback={null}>
+        <Bounds fit clip observe margin={1.2}>
+          <FitToView>
+            <Center>
+              <PCBModel url={url} />
+            </Center>
+          </FitToView>
+        </Bounds>
+      </Suspense>
+      <OrbitControls
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
+        minDistance={0.1}
+        maxDistance={1000}
+      />
+    </Canvas>
+  );
 }
 
 export default function PCBViewer({ url, title, description }) {
@@ -134,6 +85,7 @@ export default function PCBViewer({ url, title, description }) {
     setIsOpen(false);
   }, []);
 
+  // Escape to close
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => { if (e.key === 'Escape') close(); };
@@ -141,6 +93,7 @@ export default function PCBViewer({ url, title, description }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, close]);
 
+  // Lock scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -148,13 +101,14 @@ export default function PCBViewer({ url, title, description }) {
 
   return (
     <>
+      {/* Static thumbnail */}
       <div
         className="rounded-xl border border-white/10 overflow-hidden bg-black/40
                    cursor-pointer group transition-all hover:border-white/20"
         onClick={open}
       >
         <div className="relative w-full" style={{ height: '280px' }}>
-          <ThreeViewer url={url} interactive={false} />
+          <StaticPreview url={url} />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all
                           flex items-center justify-center opacity-0 group-hover:opacity-100"
                style={{ pointerEvents: 'none' }}>
@@ -172,18 +126,17 @@ export default function PCBViewer({ url, title, description }) {
         )}
       </div>
 
+      {/* Fullscreen modal — uses a real portal-style overlay above everything */}
       {isOpen && (
         <div style={{
           position: 'fixed',
-          top: '56px',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 100,
+          top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 999999,
           background: '#000',
           display: 'flex',
           flexDirection: 'column',
         }}>
+          {/* Header */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -191,42 +144,39 @@ export default function PCBViewer({ url, title, description }) {
             padding: '12px 24px',
             borderBottom: '1px solid rgba(255,255,255,0.08)',
             flexShrink: 0,
-            background: '#000',
           }}>
             <div>
-              {title && <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '16px', fontWeight: 600, color: 'rgba(255,255,255,0.9)', margin: 0 }}>{title}</p>}
-              {description && <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>{description}</p>}
+              {title && <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '18px', fontWeight: 600, color: 'rgba(255,255,255,0.9)', margin: 0 }}>{title}</p>}
+              {description && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>{description}</p>}
             </div>
             <button
-              onClick={(e) => { e.stopPropagation(); close(); }}
+              onClick={close}
               style={{
-                padding: '8px 20px',
+                padding: '8px 16px',
                 fontSize: '14px',
                 fontFamily: 'JetBrains Mono, monospace',
                 background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.25)',
+                border: '1px solid rgba(255,255,255,0.2)',
                 borderRadius: '8px',
-                color: '#fff',
+                color: 'rgba(255,255,255,0.8)',
                 cursor: 'pointer',
-                flexShrink: 0,
               }}
-              onMouseEnter={(e) => { e.target.style.background = 'rgba(255,255,255,0.2)'; }}
-              onMouseLeave={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; }}
             >
-              Close
+              ✕ Close
             </button>
           </div>
 
-          <div style={{ flex: 1, cursor: 'grab', minHeight: 0 }}>
-            <ThreeViewer url={url} interactive={true} />
+          {/* 3D Viewer */}
+          <div style={{ flex: 1, cursor: 'grab' }}>
+            <InteractiveView url={url} />
           </div>
 
+          {/* Footer */}
           <div style={{
-            padding: '8px 24px',
+            padding: '10px 24px',
             borderTop: '1px solid rgba(255,255,255,0.06)',
             textAlign: 'center',
             flexShrink: 0,
-            background: '#000',
           }}>
             <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'rgba(255,255,255,0.25)' }}>
               Drag to rotate · Scroll to zoom · Right-click to pan · Esc to close
