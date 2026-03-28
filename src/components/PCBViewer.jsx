@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect, Suspense, useCallback, useMemo } from 'react';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
+import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, Bounds, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 
 /* ────────────────────────────────────────────────
-   Scene internals (shared between preview & full)
+   Scene internals (only used in fullscreen viewer)
    ──────────────────────────────────────────────── */
 
 function FitToView({ children }) {
@@ -19,68 +20,56 @@ function PCBModel({ url }) {
   return <primitive object={scene} />;
 }
 
-// Slow auto-spin for the thumbnail preview
-function AutoSpin({ speed = 0.15 }) {
-  const { scene } = useThree();
-  useFrame((_, delta) => {
-    scene.rotation.y += speed * delta;
-  });
-  return null;
-}
-
-/* ────────────────────────────────────────────────
-   Thumbnail preview — auto-spinning, non-interactive
-   ──────────────────────────────────────────────── */
-
-function ThumbnailCanvas({ url }) {
+function Lights() {
   return (
-    <Canvas
-      dpr={[1, 1.5]}
-      camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
-      style={{ pointerEvents: 'none' }}
-      frameloop="always"
-      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
-    >
+    <>
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 10, 5]} intensity={1.2} />
       <directionalLight position={[-3, 6, -3]} intensity={0.4} />
       <directionalLight position={[0, -5, 5]} intensity={0.15} />
-      <Suspense fallback={null}>
-        <Bounds fit clip observe margin={1.3}>
-          <FitToView>
-            <Center>
-              <PCBModel url={url} />
-            </Center>
-          </FitToView>
-        </Bounds>
-      </Suspense>
-      <AutoSpin />
-    </Canvas>
+    </>
   );
 }
 
 /* ────────────────────────────────────────────────
-   Interactive fullscreen viewer
+   Loading spinner for fullscreen viewer
    ──────────────────────────────────────────────── */
 
-function ControlsWithRef({ controlsRef, onInteract }) {
+function LoadingSpinner() {
   return (
-    <OrbitControls
-      ref={controlsRef}
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-      enableDamping={true}
-      dampingFactor={0.08}
-      rotateSpeed={0.8}
-      zoomSpeed={1.0}
-      panSpeed={0.6}
-      minDistance={0.1}
-      maxDistance={1000}
-      onChange={onInteract}
-    />
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '12px',
+      pointerEvents: 'none',
+      zIndex: 2,
+    }}>
+      <div style={{
+        width: '32px',
+        height: '32px',
+        border: '2px solid rgba(255,255,255,0.08)',
+        borderTopColor: 'rgba(125,211,252,0.6)',
+        borderRadius: '50%',
+        animation: 'pcb-spin 0.8s linear infinite',
+      }} />
+      <span style={{
+        fontSize: '11px',
+        fontFamily: 'JetBrains Mono, monospace',
+        color: 'rgba(255,255,255,0.3)',
+        letterSpacing: '0.5px',
+      }}>Loading 3D model…</span>
+      <style>{`@keyframes pcb-spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
   );
 }
+
+/* ────────────────────────────────────────────────
+   Interactive fullscreen canvas
+   ──────────────────────────────────────────────── */
 
 function InteractiveCanvas({ url, controlsRef, onInteract }) {
   return (
@@ -89,10 +78,7 @@ function InteractiveCanvas({ url, controlsRef, onInteract }) {
       camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
     >
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[5, 10, 5]} intensity={1.2} />
-      <directionalLight position={[-3, 6, -3]} intensity={0.4} />
-      <directionalLight position={[0, -5, 5]} intensity={0.15} />
+      <Lights />
       <Suspense fallback={null}>
         <Bounds fit clip observe margin={1.15}>
           <FitToView>
@@ -102,13 +88,23 @@ function InteractiveCanvas({ url, controlsRef, onInteract }) {
           </FitToView>
         </Bounds>
       </Suspense>
-      <ControlsWithRef controlsRef={controlsRef} onInteract={onInteract} />
+      <OrbitControls
+        ref={controlsRef}
+        enablePan enableZoom enableRotate enableDamping
+        dampingFactor={0.08}
+        rotateSpeed={0.8}
+        zoomSpeed={1.0}
+        panSpeed={0.6}
+        minDistance={0.1}
+        maxDistance={1000}
+        onChange={onInteract}
+      />
     </Canvas>
   );
 }
 
 /* ────────────────────────────────────────────────
-   Viewer topbar with Reset / Top View / Wireframe
+   Topbar button styles
    ──────────────────────────────────────────────── */
 
 const btnBase = {
@@ -125,13 +121,6 @@ const btnBase = {
   cursor: 'pointer',
   fontFamily: 'inherit',
   transition: 'all 0.2s',
-};
-
-const btnActive = {
-  ...btnBase,
-  background: 'rgba(125, 211, 252, 0.15)',
-  color: '#7dd3fc',
-  borderColor: 'rgba(125, 211, 252, 0.3)',
 };
 
 const closeBtnStyle = {
@@ -152,55 +141,164 @@ const closeBtnStyle = {
 };
 
 /* ────────────────────────────────────────────────
-   Main PCBViewer component
+   Fullscreen overlay (portaled to <body>)
    ──────────────────────────────────────────────── */
 
-export default function PCBViewer({ url, title, description }) {
-  const [isOpen, setIsOpen] = useState(false);
+function FullscreenOverlay({ url, title, onClose }) {
   const [hintsVisible, setHintsVisible] = useState(true);
+  const [loading, setLoading] = useState(true);
   const controlsRef = useRef(null);
+
+  const onInteract = useCallback(() => {
+    if (hintsVisible) setHintsVisible(false);
+  }, [hintsVisible]);
+
+  const resetCamera = useCallback(() => {
+    if (controlsRef.current) controlsRef.current.reset();
+  }, []);
+
+  // Escape to close
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  // Lock scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  // Hide loading after a delay (model loads via Suspense)
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
+  }, []);
+
+  const stopPropagation = (e) => e.stopPropagation();
+
+  return (
+    <div style={{
+      position: 'fixed',
+      inset: 0,
+      zIndex: 999999,
+      background: 'rgba(0,0,0,0.95)',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Topbar — blocks pointer events from reaching canvas */}
+      <div
+        onPointerDown={stopPropagation}
+        onMouseDown={stopPropagation}
+        onTouchStart={stopPropagation}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 20px',
+          background: 'rgba(12,12,20,0.98)',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          flexShrink: 0,
+          position: 'relative',
+          zIndex: 10,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <span style={{
+            fontFamily: 'Syne, sans-serif',
+            fontSize: '14px',
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.9)',
+            letterSpacing: '0.3px',
+          }}>{title || '3D Model'}</span>
+          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>KiCad 3D Model</span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={resetCamera}
+            style={btnBase}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = btnBase.background; e.currentTarget.style.color = btnBase.color; }}
+          >Reset</button>
+          <button
+            onClick={onClose}
+            style={closeBtnStyle}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = closeBtnStyle.color; }}
+          >✕</button>
+        </div>
+      </div>
+
+      {/* Canvas area */}
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#0c0c14' }}>
+        {loading && <LoadingSpinner />}
+        <InteractiveCanvas url={url} controlsRef={controlsRef} onInteract={onInteract} />
+
+        {/* Hints pill */}
+        <div style={{
+          position: 'absolute',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '18px',
+          padding: '9px 20px',
+          borderRadius: '99px',
+          background: 'rgba(12,12,20,0.75)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          fontSize: '11px',
+          color: 'rgba(255,255,255,0.35)',
+          pointerEvents: 'none',
+          transition: 'opacity 0.5s',
+          opacity: hintsVisible ? 1 : 0,
+          whiteSpace: 'nowrap',
+        }}>
+          {[['Drag', 'Rotate'], ['Scroll', 'Zoom'], ['Right drag', 'Pan']].map(([key, label]) => (
+            <span key={key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <kbd style={{
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '3px',
+                padding: '1px 5px',
+                fontSize: '10px',
+              }}>{key}</kbd> {label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────
+   Main PCBViewer component
+
+   Props:
+     url        - path to .wrl 3D model
+     thumbnail  - path to static thumbnail image
+     title      - display title
+     description - subtitle text
+   ──────────────────────────────────────────────── */
+
+export default function PCBViewer({ url, thumbnail, title, description }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsOpen(true);
-    setHintsVisible(true);
   }, []);
 
-  const close = useCallback((e) => {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
+  const close = useCallback(() => {
     setIsOpen(false);
-  }, []);
-
-  // Hide hints after first interaction
-  const onInteract = useCallback(() => {
-    if (hintsVisible) setHintsVisible(false);
-  }, [hintsVisible]);
-
-  // Escape to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') close(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, close]);
-
-  // Lock scroll
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
-
-  // Reset camera
-  const resetCamera = useCallback(() => {
-    if (controlsRef.current) {
-      controlsRef.current.reset();
-    }
   }, []);
 
   return (
     <>
-      {/* ──── Thumbnail card ──── */}
+      {/* ──── Static thumbnail card ──── */}
       <div
         onClick={open}
         style={{
@@ -223,7 +321,19 @@ export default function PCBViewer({ url, title, description }) {
           e.currentTarget.style.boxShadow = 'none';
         }}
       >
-        <ThumbnailCanvas url={url} />
+        {/* Static thumbnail image */}
+        {thumbnail && (
+          <img
+            src={thumbnail}
+            alt={title || '3D PCB Model'}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
+        )}
 
         {/* Label overlay at bottom */}
         <div style={{
@@ -271,94 +381,10 @@ export default function PCBViewer({ url, title, description }) {
         )}
       </div>
 
-      {/* ──── Fullscreen overlay ──── */}
-      {isOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 999999,
-          background: 'rgba(0,0,0,0.95)',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-          {/* Topbar — flex child, no z-index needed */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 20px',
-            background: 'rgba(12,12,20,0.95)',
-            borderBottom: '1px solid rgba(255,255,255,0.07)',
-            flexShrink: 0,
-          }}>
-            {/* Left: title */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <span style={{
-                fontFamily: 'Syne, sans-serif',
-                fontSize: '14px',
-                fontWeight: 700,
-                color: 'rgba(255,255,255,0.9)',
-                letterSpacing: '0.3px',
-              }}>{title || '3D Model'}</span>
-              <span style={{
-                fontSize: '12px',
-                color: 'rgba(255,255,255,0.3)',
-              }}>KiCad 3D Model</span>
-            </div>
-
-            {/* Right: buttons + close */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                onClick={resetCamera}
-                style={btnBase}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = btnBase.background; e.currentTarget.style.color = btnBase.color; }}
-              >Reset</button>
-              <button
-                onClick={close}
-                style={closeBtnStyle}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = closeBtnStyle.color; }}
-              >✕</button>
-            </div>
-          </div>
-
-          {/* Canvas area */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#0c0c14' }}>
-            <InteractiveCanvas url={url} controlsRef={controlsRef} onInteract={onInteract} />
-
-            {/* Hints pill at bottom */}
-            <div style={{
-              position: 'absolute',
-              bottom: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              gap: '18px',
-              padding: '9px 20px',
-              borderRadius: '99px',
-              background: 'rgba(12,12,20,0.75)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.07)',
-              fontSize: '11px',
-              color: 'rgba(255,255,255,0.35)',
-              pointerEvents: 'none',
-              transition: 'opacity 0.5s',
-              opacity: hintsVisible ? 1 : 0,
-              whiteSpace: 'nowrap',
-            }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Drag</kbd> Rotate
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Scroll</kbd> Zoom
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Right drag</kbd> Pan
-              </span>
-            </div>
-          </div>
-        </div>
+      {/* ──── Fullscreen overlay — portaled to <body> ──── */}
+      {isOpen && createPortal(
+        <FullscreenOverlay url={url} title={title} onClose={close} />,
+        document.body
       )}
     </>
   );
