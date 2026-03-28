@@ -198,21 +198,22 @@ import ProjectCard from "../components/ProjectCard.jsx";
 
         <ProjectCard
           client:only="react"
-          title="OERC Research — Maritime Autonomy"
-          subtitle="Ocean Engineering Research Center · Jan – May 2026"
-          description="C++/OpenGL ship hull visualization, MASS connectivity research report, and autonomous model vessel with PID-based wall tracking and obstacle avoidance."
+          title="AEGIS — Autonomous SAR Vessel"
+          subtitle="OERC Research · Supervised by Dr. Wei Qiu · Jan – May 2026"
+          description="Scale-model autonomous search-and-rescue vessel targeting IMO Level 2/3 autonomy. Dual-processor architecture (Arduino + Pi Zero 2 W) with thermal imaging, LiDAR, and GPS for person-in-water detection."
           thumbnail="/projects/oerc/boat-thumb.png"
           logo="/logos/mun-engineering.png"
           logoClass="bg-white/10 p-1"
           contextTag="Work"
           contextType="work"
           href="/projects/oerc"
-          tags={["C++", "OpenGL", "NURBS", "Arduino", "LiDAR", "PID Control"]}
-          modalDescription="Research work at the Ocean Engineering Research Center under Dr. Wei Qiu, spanning three distinct projects in maritime autonomy and scientific computing."
+          tags={["Arduino", "Raspberry Pi", "LiDAR", "OpenCV", "KiCad", "C++"]}
+          modalDescription="Three projects at Memorial's Ocean Engineering Research Center under Dr. Wei Qiu: an autonomous SAR vessel (AEGIS), a C++/OpenGL hull visualization tool, and a MASS connectivity research report."
           highlights={[
-            "Built a C++/OpenGL desktop application for interactive 3D visualization of ship hull geometry — parsing IGES files to render NURBS surfaces, control nets, and surface normals",
-            "Authored a comprehensive research report on Maritime Autonomous Surface Ship connectivity requirements aligned with IMO and Transport Canada frameworks",
-            "Designed and built an autonomous model vessel with Arduino and LiDAR using embedded PID-based control for wall tracking and obstacle avoidance"
+            "Built AEGIS, a scale-model SAR vessel with MLX90640 thermal array doing 360° servo sweeps for person-in-water detection, generating georeferenced 3D thermal point clouds",
+            "Dual-processor design: Arduino Uno for real-time motor PID and rudder control, Pi Zero 2 W for thermal pipeline, OpenCV vision, GPS/IMU logging, and WiFi streaming",
+            "Solar-powered independent sensor bus (TP4056, 18650, MT3608) running SAR payload separately from main propulsion",
+            "Wrote a C++/OpenGL desktop application for ship hull visualization, plugging into Dr. Qiu's frequency-domain hydrodynamic solver"
           ]}
         />
       </div>

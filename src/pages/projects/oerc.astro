@@ -10,17 +10,16 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
   logoAlt="MUN Engineering"
   logoClass="bg-white/10 p-1"
   context="Work"
-  tags={["C++", "OpenGL", "NURBS", "IGES", "Arduino", "LiDAR", "PID Control", "MATLAB", "Research"]}
+  tags={["C++", "OpenGL", "NURBS", "IGES", "Arduino", "Raspberry Pi", "LiDAR", "PID Control", "KiCad", "OpenCV", "MATLAB", "Research"]}
 >
 
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
     <p class="text-white/55 leading-relaxed max-w-2xl">
-      During my research term at the Ocean Engineering Research Center under Dr. Wei Qiu, 
-      I worked across three interconnected projects in maritime autonomy — developing 
-      scientific visualization software, authoring a large-scale research report on 
-      autonomous vessel communications, and designing an autonomous model vessel for 
-      tank-testing experiments.
+      Three projects under Dr. Wei Qiu at Memorial's Ocean Engineering Research Center,
+      all tied to maritime autonomy: a C++/OpenGL tool for hull geometry visualization,
+      a research report on autonomous vessel communications for IMO/Transport Canada frameworks,
+      and AEGIS, a scale-model autonomous SAR vessel I designed and built from scratch.
     </p>
   </section>
 
@@ -28,45 +27,52 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
     <h2 class="font-display text-lg font-600 text-white/80 mb-6">Projects</h2>
     <div class="space-y-8">
 
+      <!-- AEGIS -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Ship Hull Visualization Tool</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">C++ · OpenGL · NURBS · IGES</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Developed a C++/OpenGL desktop application for ship hull visualization and 
-          hydrodynamic preprocessing. The tool parses IGES files to render NURBS surfaces, 
-          control nets, and surface normals in an interactive 3D viewer. Integrated with a 
-          frequency-domain hydrodynamic solver developed by Dr. Wei Qiu to ingest vessel 
-          geometry and mass-distribution inputs and display motion RAOs, drift forces, and 
-          wave-induced loads.
-        </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Screenshots coming soon
+        <h3 class="font-display font-600 text-white/85 mb-1">AEGIS — Autonomous SAR Vessel</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">Arduino · Raspberry Pi Zero 2 W · LiDAR · MLX90640 · OpenCV · KiCad</p>
+        <div class="space-y-3 text-sm text-white/50 leading-relaxed mb-5">
+          <p>
+            AEGIS (Autonomous Environmental Guardian for Intelligent Search-and-Rescue) is a
+            scale-model demonstrator targeting IMO Level 2/3 autonomy. The problem it addresses
+            is straightforward: Canada's coastline is massive, Arctic conditions are harsh, and
+            there aren't enough SAR crews to cover it all. The vessel does continuous thermal
+            patrol, scanning for people in the water.
+          </p>
+          <p>
+            It started as my ONAE 6055 course project — an Arduino Uno with an L298N H-bridge
+            driving a DC motor, a rudder servo, and LiDAR sensors for PID-based wall tracking.
+            For the Fueling the Future Fest poster competition I reframed it as AEGIS and added
+            a solar-powered independent sensor bus (5V solar panel, TP4056 charger, 18650 cell,
+            MT3608 boost converter) that powers the SAR payload independently from the main
+            propulsion LiPo.
+          </p>
+          <p>
+            The architecture is dual-processor. The Uno handles real-time motor PID and rudder
+            control — proven code I didn't want to touch. A Pi Zero 2 W handles everything
+            compute-heavy: the thermal imaging pipeline, camera-based obstacle detection via OpenCV,
+            GPS/IMU logging, WiFi streaming to a ground station, and 3D thermal map generation.
+            They communicate over UART serial.
+          </p>
+          <p>
+            Thermal detection runs on an MLX90640 32×24 thermal array mounted on a servo, doing
+            a 4-position sweep for 360° coverage using the sensor's 110° wide-angle FOV. Each
+            sweep produces a georeferenced thermal frame tagged with GPS coordinates and IMU
+            orientation, logged to SD and optionally streamed live. The point is to build a
+            real-time 3D thermal point cloud of the boat's surroundings, where human heat
+            signatures (~30°C+) pop against cold water. When the system detects a warm cluster,
+            it triggers LEDs and a piezo buzzer to mark the location.
+          </p>
+          <p>
+            A Pi Camera Module on the CSI port handles forward-looking visual obstacle detection
+            through OpenCV, working alongside the LiDAR's range-based avoidance.
+          </p>
+          <p class="text-white/40 italic">
+            Next: a custom KiCad carrier PCB that sits under the Pi Zero 2 W as a HAT-style board,
+            consolidating power management, I2C headers (MLX90640, GPS, IMU), servo output, UART
+            crossover to the Uno, CSI passthrough, and status LEDs into one clean board.
+          </p>
         </div>
-      </div>
-
-      <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">MASS Connectivity Research</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">Technical Writing · IMO Standards · Transport Canada</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Authored a large-scale research report on Maritime Autonomous Surface Ship (MASS) 
-          connectivity requirements, evaluating communication needs across key operational 
-          phases to inform recommendations relevant to IMO and Transport Canada aligned 
-          autonomous vessel frameworks.
-        </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Add report excerpts or diagrams here
-        </div>
-      </div>
-
-      <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Autonomous Model Vessel</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">Arduino · LiDAR · PID Control · Embedded C++</p>
-        <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Designed and built an autonomous model vessel using Arduino microcontrollers and 
-          LiDAR sensors. Completed hardware design, wiring schematics, and embedded C++ 
-          PID-based control for wall tracking, obstacle avoidance, and course correction 
-          in tank-testing environments.
-        </p>
         <PhotoGallery
           client:only="react"
           images={[
@@ -80,6 +86,40 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           ]}
         />
       </div>
+
+      <!-- Hull visualization tool -->
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">Ship hull visualization tool</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">C++ · OpenGL · NURBS · IGES</p>
+        <div class="space-y-3 text-sm text-white/50 leading-relaxed">
+          <p>
+            A C++/OpenGL desktop application that reads IGES hull geometry files and renders
+            the NURBS surfaces, control nets, and surface normals in an interactive 3D viewer.
+            You can rotate, zoom, toggle between wireframe/shaded views, and inspect individual
+            surface patches.
+          </p>
+          <p>
+            The tool plugs into Dr. Qiu's frequency-domain hydrodynamic solver, so it also
+            ingests vessel mass-distribution data and displays computed motion RAOs, drift
+            forces, and wave-induced loads alongside the geometry. Basically a preprocessing
+            front-end for the solver that didn't have a visual interface before.
+          </p>
+        </div>
+      </div>
+
+      <!-- MASS report -->
+      <div class="glass-card p-6">
+        <h3 class="font-display font-600 text-white/85 mb-2">MASS connectivity research</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">Technical writing · IMO standards · Transport Canada</p>
+        <p class="text-sm text-white/50 leading-relaxed">
+          A research report on communication requirements for Maritime Autonomous Surface Ships
+          (MASS). The report maps connectivity needs across different operational phases and
+          autonomy levels, aligned with current IMO and Transport Canada frameworks. This work
+          directly informed the AEGIS design, particularly around how the vessel handles
+          connectivity failover and what data it needs to stream vs. log locally.
+        </p>
+      </div>
+
     </div>
   </section>
 
