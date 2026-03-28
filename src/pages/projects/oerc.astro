@@ -1,5 +1,6 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import PhotoGallery from "../../components/PhotoGallery.jsx";
 ---
 
 <ProjectLayout
@@ -38,9 +39,11 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
           geometry and mass-distribution inputs and display motion RAOs, drift forces, and 
           wave-induced loads.
         </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Add screenshots: /public/projects/oerc/hull-viz.jpg
-        </div>
+        <img
+          src="/projects/oerc/hull-lines.png"
+          alt="Hull lines plan — profile, half-breadth, and body plan views"
+          class="rounded-lg w-full"
+        />
       </div>
 
       <div class="glass-card p-6">
@@ -66,9 +69,13 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
           PID-based control for wall tracking, obstacle avoidance, and course correction 
           in tank-testing environments.
         </p>
-        <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-          Add photos: vessel build, wiring, tank tests
-        </div>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/oerc/boat-thumb.png", alt: "Autonomous model vessel — side view", caption: "Completed autonomous model vessel on display stand, showing hull, propulsion, and sensor mounting" },
+            { src: "/projects/oerc/hull-lines.png", alt: "Hull lines plan", caption: "Hull lines plan — profile, half-breadth waterlines, and body plan cross-sections" },
+          ]}
+        />
       </div>
     </div>
   </section>
