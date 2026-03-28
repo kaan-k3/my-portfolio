@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, Bounds, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
-import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
+import { useGLTF } from '@react-three/drei';
 
 /* ────────────────────────────────────────────────
    Scene internals (only used in fullscreen viewer)
@@ -16,7 +16,7 @@ function FitToView({ children }) {
 }
 
 function PCBModel({ url }) {
-  const scene = useLoader(VRMLLoader, url);
+  const { scene } = useGLTF(url);
   return <primitive object={scene} />;
 }
 
@@ -277,7 +277,7 @@ function FullscreenOverlay({ url, title, onClose }) {
    Main PCBViewer component
 
    Props:
-     url        - path to .wrl 3D model
+     url        - path to .glb 3D model
      thumbnail  - path to static thumbnail image
      title      - display title
      description - subtitle text
