@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PCBViewer from "../components/PCBViewer.jsx";
 ---
 
 <Layout title="Kaan Keskindil — Electrical Engineering">
@@ -14,8 +15,8 @@ import Layout from "../layouts/Layout.astro";
         Kaan<br/>Keskindil
       </h1>
       <p class="mt-6 text-lg text-white/50 leading-relaxed max-w-xl font-light">
-        Engineering student building at the intersection of embedded hardware, 
-        autonomous systems, and scientific computing. Currently seeking 
+        Engineering student building at the intersection of embedded hardware,
+        autonomous systems, and scientific computing. Currently seeking
         <span class="text-white/70">Sep–Dec 2026</span> co-op opportunities.
       </p>
       <div class="flex flex-wrap items-center gap-3 mt-8">
@@ -41,26 +42,25 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- ABOUT -->
   <section id="about" class="max-w-5xl mx-auto px-6 py-20 fade-section">
-    <div class="grid md:grid-cols-[200px_1fr] gap-8">
-      <h2 class="font-display text-sm font-600 tracking-widest uppercase text-white/30">About</h2>
-      <div class="max-w-xl space-y-4">
-        <p class="text-white/65 leading-relaxed">
-          I'm an Electrical Engineering student at Memorial University with hands-on 
-          experience in autonomous systems research, embedded hardware design, and 
-          scientific software development. I work across the full stack of engineering — 
-          from designing PCBs and writing STM32 firmware to building C++/OpenGL 
-          desktop applications and deploying cloud-based trading infrastructure.
-        </p>
-        <p class="text-white/65 leading-relaxed">
-          My work spans maritime autonomy research supervised by Dr. Wei Qiu, 
-          competitive engineering design teams, and a quantitative trading society 
-          where I direct data infrastructure. I'm driven by applying R&D to 
-          real-world engineering problems.
-        </p>
-        <div class="flex items-center gap-4 pt-2">
-          <span class="text-xs font-mono text-white/25">Languages</span>
-          <span class="text-sm text-white/50">English & Turkish (Native) · Spanish · French · Japanese</span>
-        </div>
+    <p class="section-label">01 — About</p>
+    <h2 class="section-title">Background</h2>
+    <div class="max-w-2xl space-y-4">
+      <p class="text-white/65 leading-relaxed">
+        I'm an Electrical Engineering student at Memorial University with hands-on
+        experience in autonomous systems research, embedded hardware design, and
+        scientific software development. I work across the full stack of engineering —
+        from designing PCBs and writing STM32 firmware to building C++/OpenGL
+        desktop applications and deploying cloud-based trading infrastructure.
+      </p>
+      <p class="text-white/65 leading-relaxed">
+        My work spans maritime autonomy research supervised by Dr. Wei Qiu,
+        competitive engineering design teams, and a quantitative trading society
+        where I direct data infrastructure. I'm driven by applying R&D to
+        real-world engineering problems.
+      </p>
+      <div class="flex items-center gap-4 pt-2">
+        <span class="text-xs font-mono text-white/25">Languages</span>
+        <span class="text-sm text-white/50">English & Turkish (Native) · Spanish · French · Japanese</span>
       </div>
     </div>
   </section>
@@ -69,7 +69,10 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- EXPERIENCE -->
   <section id="experience" class="max-w-5xl mx-auto px-6 py-20">
-    <h2 class="font-display text-sm font-600 tracking-widest uppercase text-white/30 mb-12 fade-section">Experience</h2>
+    <div class="fade-section">
+      <p class="section-label">02 — Experience</p>
+      <h2 class="section-title">Work History</h2>
+    </div>
     <div class="relative pl-6 stagger">
       <div class="timeline-line"></div>
 
@@ -128,88 +131,119 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- PROJECTS -->
   <section id="projects" class="max-w-5xl mx-auto px-6 py-20">
-    <h2 class="font-display text-sm font-600 tracking-widest uppercase text-white/30 mb-12 fade-section">Projects & Teams</h2>
+    <div class="fade-section">
+      <p class="section-label">03 — Projects</p>
+      <h2 class="section-title">Engineering Projects</h2>
+    </div>
 
     <!-- Embedded & Hardware -->
     <div class="mb-14 fade-section">
-      <div class="flex items-center gap-3 mb-6">
-        <span class="inline-block w-2 h-2 rounded-full bg-amber-400/80"></span>
-        <h3 class="font-display text-lg font-600 text-white/80">Embedded & Hardware</h3>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+        <h3 class="font-display text-2xl font-700 text-white/85">Embedded & Hardware</h3>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 stagger">
 
-        <div class="glass-card p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <img src="/logos/paradigm.png" alt="Paradigm" class="w-9 h-9 rounded-md mt-0.5 object-contain invert brightness-200" />
-              <div>
-                <h4 class="font-display font-600 text-white/85">Paradigm Engineering</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Electrical Team · Jan 2026 – Present</p>
+        <!-- Paradigm card with PCB thumbnail -->
+        <div class="glass-card group overflow-hidden">
+          <a href="/projects/paradigm" class="block">
+            <!-- PCB Thumbnail -->
+            <div class="relative aspect-[16/9] overflow-hidden bg-[#0c0c14]">
+              <img
+                src="/projects/paradigm/control-pcb-thumb.png"
+                alt="VCU PCB 3D Model"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              <div class="absolute bottom-2 left-3 flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(125,211,252,0.7)" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+                <span class="text-[10px] font-mono text-sky-300/60">3D PCB Model</span>
               </div>
             </div>
-            <span class="context-tag context-tag--team">Team</span>
-          </div>
-          <p class="text-sm text-white/50 leading-relaxed mb-3">Designed STM32-based vehicle control and multi-rail power distribution PCBs in KiCad. Developed embedded C firmware for PWM-based motor braking control.</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">STM32</span><span class="tech-tag">KiCad</span><span class="tech-tag">C</span><span class="tech-tag">PCB Design</span><span class="tech-tag">FDCAN</span><span class="tech-tag">JTAG</span>
-          </div>
-          <a href="/projects/paradigm" class="detail-link">View details →</a>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-start gap-3">
+                  <img src="/logos/paradigm.png" alt="Paradigm" class="w-9 h-9 rounded-md mt-0.5 object-contain invert brightness-200" />
+                  <div>
+                    <h4 class="font-display font-600 text-white/85">Paradigm Engineering</h4>
+                    <p class="text-xs font-mono text-white/30 mt-0.5">Electrical Team · Jan 2026 – Present</p>
+                  </div>
+                </div>
+                <span class="context-tag context-tag--team">Team</span>
+              </div>
+              <p class="text-sm text-white/50 leading-relaxed mb-3">Designed STM32-based vehicle control and multi-rail power distribution PCBs in KiCad. Developed embedded C firmware for PWM-based motor braking control.</p>
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                <span class="tech-tag">STM32</span><span class="tech-tag">KiCad</span><span class="tech-tag">C</span><span class="tech-tag">PCB Design</span><span class="tech-tag">FDCAN</span><span class="tech-tag">JTAG</span>
+              </div>
+              <span class="detail-link group-hover:opacity-100">Click to view full details ›</span>
+            </div>
+          </a>
         </div>
 
-        <div class="glass-card p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <img src="/logos/eastern-edge.png" alt="Eastern Edge" class="w-12 h-9 rounded-md mt-0.5 object-contain" />
-              <div>
-                <h4 class="font-display font-600 text-white/85">Eastern Edge Robotics</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Software/Electrical · Sep 2024 – Present</p>
+        <div class="glass-card group overflow-hidden">
+          <a href="/projects/eastern-edge" class="block">
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-start gap-3">
+                  <img src="/logos/eastern-edge.png" alt="Eastern Edge" class="w-12 h-9 rounded-md mt-0.5 object-contain" />
+                  <div>
+                    <h4 class="font-display font-600 text-white/85">Eastern Edge Robotics</h4>
+                    <p class="text-xs font-mono text-white/30 mt-0.5">Software/Electrical · Sep 2024 – Present</p>
+                  </div>
+                </div>
+                <span class="context-tag context-tag--team">Team</span>
               </div>
+              <p class="text-sm text-white/50 leading-relaxed mb-3">Built mechanical assemblies for an underwater ROV. Investigating CANBus/RS-485 protocols and writing embedded C++ on Raspberry Pi for subsystem control.</p>
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                <span class="tech-tag">C++</span><span class="tech-tag">CANBus</span><span class="tech-tag">RS-485</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">OnShape</span>
+              </div>
+              <span class="detail-link group-hover:opacity-100">Click to view full details ›</span>
             </div>
-            <span class="context-tag context-tag--team">Team</span>
-          </div>
-          <p class="text-sm text-white/50 leading-relaxed mb-3">Built mechanical assemblies for an underwater ROV. Investigating CANBus/RS-485 protocols and writing embedded C++ on Raspberry Pi for subsystem control.</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">C++</span><span class="tech-tag">CANBus</span><span class="tech-tag">RS-485</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">OnShape</span>
-          </div>
-          <a href="/projects/eastern-edge" class="detail-link">View details →</a>
+          </a>
         </div>
       </div>
     </div>
 
     <!-- Scientific Computing & Research -->
     <div class="mb-14 fade-section">
-      <div class="flex items-center gap-3 mb-6">
-        <span class="inline-block w-2 h-2 rounded-full bg-sky-400/80"></span>
-        <h3 class="font-display text-lg font-600 text-white/80">Scientific Computing & Research</h3>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-sky-400/80"></span>
+        <h3 class="font-display text-2xl font-700 text-white/85">Scientific Computing & Research</h3>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 stagger">
-        <div class="glass-card p-5 sm:col-span-2">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <img src="/logos/mun-engineering.png" alt="MUN" class="w-9 h-9 rounded-md mt-0.5 object-contain bg-white/10 p-1" />
+        <div class="glass-card group overflow-hidden sm:col-span-2">
+          <a href="/projects/oerc" class="block p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-start gap-3">
+                <img src="/logos/mun-engineering.png" alt="MUN" class="w-9 h-9 rounded-md mt-0.5 object-contain bg-white/10 p-1" />
+                <div>
+                  <h4 class="font-display font-600 text-white/85">OERC Research — Maritime Autonomy</h4>
+                  <p class="text-xs font-mono text-white/30 mt-0.5">Ocean Engineering Research Center · Jan – May 2026</p>
+                </div>
+              </div>
+              <span class="context-tag context-tag--work">Work</span>
+            </div>
+            <div class="sm:grid sm:grid-cols-2 sm:gap-6">
               <div>
-                <h4 class="font-display font-600 text-white/85">OERC Research — Maritime Autonomy</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Ocean Engineering Research Center · Jan – May 2026</p>
+                <p class="text-xs font-mono text-white/25 mb-1">Ship Hull Visualization</p>
+                <p class="text-sm text-white/50 leading-relaxed mb-3">C++/OpenGL application for interactive 3D visualization of ship hull geometry. Parses IGES files to render NURBS surfaces. Integrated with a frequency-domain hydrodynamic solver for motion RAOs and drift forces.</p>
+              </div>
+              <div>
+                <p class="text-xs font-mono text-white/25 mb-1">MASS Connectivity Research</p>
+                <p class="text-sm text-white/50 leading-relaxed mb-3">Large-scale report evaluating Maritime Autonomous Surface Ship connectivity requirements across operational phases, aligned with IMO and Transport Canada frameworks.</p>
               </div>
             </div>
-            <span class="context-tag context-tag--work">Work</span>
-          </div>
-          <div class="sm:grid sm:grid-cols-2 sm:gap-6">
-            <div>
-              <p class="text-xs font-mono text-white/25 mb-1">Ship Hull Visualization</p>
-              <p class="text-sm text-white/50 leading-relaxed mb-3">C++/OpenGL application for interactive 3D visualization of ship hull geometry. Parses IGES files to render NURBS surfaces. Integrated with a frequency-domain hydrodynamic solver for motion RAOs and drift forces.</p>
+            <p class="text-xs font-mono text-white/25 mb-1">Autonomous Model Vessel</p>
+            <p class="text-sm text-white/50 leading-relaxed mb-4">Designed hardware, wiring schematics, and embedded PID-based control for an autonomous vessel with wall tracking and obstacle avoidance using Arduino and LiDAR.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="tech-tag">C++</span><span class="tech-tag">OpenGL</span><span class="tech-tag">NURBS</span><span class="tech-tag">IGES</span><span class="tech-tag">Arduino</span><span class="tech-tag">LiDAR</span><span class="tech-tag">PID Control</span><span class="tech-tag">Research</span>
             </div>
-            <div>
-              <p class="text-xs font-mono text-white/25 mb-1">MASS Connectivity Research</p>
-              <p class="text-sm text-white/50 leading-relaxed mb-3">Large-scale report evaluating Maritime Autonomous Surface Ship connectivity requirements across operational phases, aligned with IMO and Transport Canada frameworks.</p>
-            </div>
-          </div>
-          <p class="text-xs font-mono text-white/25 mb-1">Autonomous Model Vessel</p>
-          <p class="text-sm text-white/50 leading-relaxed mb-4">Designed hardware, wiring schematics, and embedded PID-based control for an autonomous vessel with wall tracking and obstacle avoidance using Arduino and LiDAR.</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">C++</span><span class="tech-tag">OpenGL</span><span class="tech-tag">NURBS</span><span class="tech-tag">IGES</span><span class="tech-tag">Arduino</span><span class="tech-tag">LiDAR</span><span class="tech-tag">PID Control</span><span class="tech-tag">Research</span>
-          </div>
-          <a href="/projects/oerc" class="detail-link">View details →</a>
+            <span class="detail-link group-hover:opacity-100">Click to view full details ›</span>
+          </a>
         </div>
 
         <div class="glass-card p-5">
@@ -233,57 +267,61 @@ import Layout from "../layouts/Layout.astro";
 
     <!-- Data Infrastructure & Trading -->
     <div class="mb-14 fade-section">
-      <div class="flex items-center gap-3 mb-6">
-        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400/80"></span>
-        <h3 class="font-display text-lg font-600 text-white/80">Data Infrastructure & Trading</h3>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
+        <h3 class="font-display text-2xl font-700 text-white/85">Data Infrastructure & Trading</h3>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 stagger">
-        <div class="glass-card p-5 sm:col-span-2">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <img src="/logos/mqs.png" alt="MQS" class="w-15 h-13 rounded-md mt-0.5 object-contain" />
-              <div>
-                <h4 class="font-display font-600 text-white/85">MUN Quant Society</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Director, Data & Infrastructure · Sep 2025 – Present</p>
+        <div class="glass-card group overflow-hidden sm:col-span-2">
+          <a href="/projects/mqs" class="block p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-start gap-3">
+                <img src="/logos/mqs.png" alt="MQS" class="w-15 h-13 rounded-md mt-0.5 object-contain" />
+                <div>
+                  <h4 class="font-display font-600 text-white/85">MUN Quant Society</h4>
+                  <p class="text-xs font-mono text-white/30 mt-0.5">Director, Data & Infrastructure · Sep 2025 – Present</p>
+                </div>
               </div>
+              <span class="context-tag context-tag--team">Team</span>
             </div>
-            <span class="context-tag context-tag--team">Team</span>
-          </div>
-          <div class="sm:grid sm:grid-cols-2 sm:gap-6">
-            <p class="text-sm text-white/50 leading-relaxed mb-3">Directed development of end-to-end trading infrastructure including real-time ingestion pipelines, PostgreSQL storage, and GCP-deployed microservices powering HFT, backtesting, and sentiment-analysis.</p>
-            <p class="text-sm text-white/50 leading-relaxed mb-3">Built scalable Python/SQL data tooling with CI/CD via GitHub Actions, NLP pipelines using PyTorch, and transformer hyperparameter tuning for low-latency market feed analysis.</p>
-          </div>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">Python</span><span class="tech-tag">PostgreSQL</span><span class="tech-tag">GCP</span><span class="tech-tag">PyTorch</span><span class="tech-tag">NLP</span><span class="tech-tag">GitHub Actions</span><span class="tech-tag">CI/CD</span><span class="tech-tag">Microservices</span>
-          </div>
-          <a href="/projects/mqs" class="detail-link">View details →</a>
+            <div class="sm:grid sm:grid-cols-2 sm:gap-6">
+              <p class="text-sm text-white/50 leading-relaxed mb-3">Directed development of end-to-end trading infrastructure including real-time ingestion pipelines, PostgreSQL storage, and GCP-deployed microservices powering HFT, backtesting, and sentiment-analysis.</p>
+              <p class="text-sm text-white/50 leading-relaxed mb-3">Built scalable Python/SQL data tooling with CI/CD via GitHub Actions, NLP pipelines using PyTorch, and transformer hyperparameter tuning for low-latency market feed analysis.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="tech-tag">Python</span><span class="tech-tag">PostgreSQL</span><span class="tech-tag">GCP</span><span class="tech-tag">PyTorch</span><span class="tech-tag">NLP</span><span class="tech-tag">GitHub Actions</span><span class="tech-tag">CI/CD</span><span class="tech-tag">Microservices</span>
+            </div>
+            <span class="detail-link group-hover:opacity-100">Click to view full details ›</span>
+          </a>
         </div>
       </div>
     </div>
 
     <!-- Other Projects -->
     <div class="fade-section">
-      <div class="flex items-center gap-3 mb-6">
-        <span class="inline-block w-2 h-2 rounded-full bg-violet-400/80"></span>
-        <h3 class="font-display text-lg font-600 text-white/80">Other Projects</h3>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-violet-400/80"></span>
+        <h3 class="font-display text-2xl font-700 text-white/85">Other Projects</h3>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 stagger">
-        <div class="glass-card p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-md bg-violet-500/15 flex items-center justify-center text-violet-400 font-mono text-xs mt-0.5">R6</div>
-              <div>
-                <h4 class="font-display font-600 text-white/85">Siege Tracker</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Personal Project · 2025</p>
+        <div class="glass-card group overflow-hidden">
+          <a href="/projects/siege-tracker" class="block p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-md bg-violet-500/15 flex items-center justify-center text-violet-400 font-mono text-xs mt-0.5">R6</div>
+                <div>
+                  <h4 class="font-display font-600 text-white/85">Siege Tracker</h4>
+                  <p class="text-xs font-mono text-white/30 mt-0.5">Personal Project · 2025</p>
+                </div>
               </div>
+              <span class="context-tag context-tag--personal">Personal</span>
             </div>
-            <span class="context-tag context-tag--personal">Personal</span>
-          </div>
-          <p class="text-sm text-white/50 leading-relaxed mb-3">Full-stack Python app combining API queries with Selenium scraping for real-time match stats. Flask dashboard, Discord bot, and Arduino OLED display for live metrics.</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">Python</span><span class="tech-tag">Flask</span><span class="tech-tag">Selenium</span><span class="tech-tag">Discord.py</span><span class="tech-tag">Arduino</span>
-          </div>
-          <a href="/projects/siege-tracker" class="detail-link">View details →</a>
+            <p class="text-sm text-white/50 leading-relaxed mb-3">Full-stack Python app combining API queries with Selenium scraping for real-time match stats. Flask dashboard, Discord bot, and Arduino OLED display for live metrics.</p>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="tech-tag">Python</span><span class="tech-tag">Flask</span><span class="tech-tag">Selenium</span><span class="tech-tag">Discord.py</span><span class="tech-tag">Arduino</span>
+            </div>
+            <span class="detail-link group-hover:opacity-100">Click to view full details ›</span>
+          </a>
         </div>
       </div>
     </div>
@@ -293,26 +331,25 @@ import Layout from "../layouts/Layout.astro";
 
   <!-- SKILLS -->
   <section id="skills" class="max-w-5xl mx-auto px-6 py-20 fade-section">
-    <div class="grid md:grid-cols-[200px_1fr] gap-8">
-      <h2 class="font-display text-sm font-600 tracking-widest uppercase text-white/30">Skills</h2>
-      <div class="grid sm:grid-cols-2 gap-8">
-        <div>
-          <h3 class="text-xs font-mono text-white/25 uppercase tracking-wider mb-3">Languages & Frameworks</h3>
-          <div class="flex flex-wrap gap-2">
-            <span class="tech-tag">C++</span><span class="tech-tag">C</span><span class="tech-tag">Python</span><span class="tech-tag">MATLAB</span><span class="tech-tag">Bash</span><span class="tech-tag">SQL / PostgreSQL</span><span class="tech-tag">PyTorch</span><span class="tech-tag">NumPy</span><span class="tech-tag">Pandas</span>
-          </div>
+    <p class="section-label">04 — Skills</p>
+    <h2 class="section-title mb-10">Technical Skills</h2>
+    <div class="grid sm:grid-cols-2 gap-8">
+      <div>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Languages & Frameworks</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="tech-tag">C++</span><span class="tech-tag">C</span><span class="tech-tag">Python</span><span class="tech-tag">MATLAB</span><span class="tech-tag">Bash</span><span class="tech-tag">SQL / PostgreSQL</span><span class="tech-tag">PyTorch</span><span class="tech-tag">NumPy</span><span class="tech-tag">Pandas</span>
         </div>
-        <div>
-          <h3 class="text-xs font-mono text-white/25 uppercase tracking-wider mb-3">Hardware & Tools</h3>
-          <div class="flex flex-wrap gap-2">
-            <span class="tech-tag">PCB Design (KiCad)</span><span class="tech-tag">STM32</span><span class="tech-tag">Arduino</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">PSPICE</span><span class="tech-tag">AutoCAD</span><span class="tech-tag">Git</span><span class="tech-tag">Linux</span><span class="tech-tag">OpenGL</span><span class="tech-tag">GCP</span>
-          </div>
+      </div>
+      <div>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Hardware & Tools</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="tech-tag">PCB Design (KiCad)</span><span class="tech-tag">STM32</span><span class="tech-tag">Arduino</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">PSPICE</span><span class="tech-tag">AutoCAD</span><span class="tech-tag">Git</span><span class="tech-tag">Linux</span><span class="tech-tag">OpenGL</span><span class="tech-tag">GCP</span>
         </div>
-        <div class="sm:col-span-2">
-          <h3 class="text-xs font-mono text-white/25 uppercase tracking-wider mb-3">Domains</h3>
-          <div class="flex flex-wrap gap-2">
-            <span class="tech-tag">Autonomous Systems</span><span class="tech-tag">Maritime Engineering</span><span class="tech-tag">Embedded Systems</span><span class="tech-tag">Robotics & Control</span><span class="tech-tag">Scientific Computing</span><span class="tech-tag">Data Infrastructure</span>
-          </div>
+      </div>
+      <div class="sm:col-span-2">
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Domains</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="tech-tag">Autonomous Systems</span><span class="tech-tag">Maritime Engineering</span><span class="tech-tag">Embedded Systems</span><span class="tech-tag">Robotics & Control</span><span class="tech-tag">Scientific Computing</span><span class="tech-tag">Data Infrastructure</span>
         </div>
       </div>
     </div>

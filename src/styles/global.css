@@ -261,18 +261,41 @@ html {
   border: 1px solid rgba(167, 139, 250, 0.15);
 }
 
+/* ── Section headers (Cameron-style) ──────────── */
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
 /* ── Detail link ──────────────────────────────── */
 
 .detail-link {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--color-accent);
-  opacity: 0.6;
+  opacity: 0;
   transition: opacity 200ms ease;
 }
 
-.detail-link:hover {
+.detail-link:hover,
+.group:hover .detail-link {
   opacity: 1;
 }
 
