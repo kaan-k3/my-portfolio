@@ -1,64 +1,124 @@
-import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
-import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls, Center, Bounds, useBounds, useGLTF } from '@react-three/drei';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
-function GLBModel({ url }) {
-  const { scene } = useGLTF(url);
-  return <primitive object={scene} />;
-}
-
-function VRMLModel({ url }) {
-  // Dynamic import to avoid bundling VRMLLoader at build time
-  const [scene, setScene] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    import('three/examples/jsm/loaders/VRMLLoader.js').then(({ VRMLLoader }) => {
-      const loader = new VRMLLoader();
-      loader.load(url, (result) => {
-        if (!cancelled) setScene(result);
-      });
-    });
-    return () => { cancelled = true; };
-  }, [url]);
-  if (!scene) return null;
-  return <primitive object={scene} />;
-}
-
-function Model({ url }) {
-  const isGLB = url.endsWith('.glb') || url.endsWith('.gltf');
-  return isGLB ? <GLBModel url={url} /> : <VRMLModel url={url} />;
-}
-
-function FitToView({ children }) {
-  const bounds = useBounds();
-  useEffect(() => {
-    bounds.refresh().clip().fit();
-  }, [bounds]);
-  return <>{children}</>;
-}
-
-function StaticPreview({ url }) {
-  return (
-    <Canvas
-      dpr={[1, 1.5]}
-      camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
-      style={{ pointerEvents: 'none' }}
-      gl={{ antialias: true, powerPreference: 'high-performance' }}
-    >
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[5, 10, 5]} intensity={1.0} />
-      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
-      <Suspense fallback={null}>
-        <Bounds fit clip observe margin={1.3}>
-          <FitToView>
-            <Center>
-              <Model url={url} />
-            </Center>
-          </FitToView>
-        </Bounds>
-      </Suspense>
-    </Canvas>
+async function loadThreeDeps() {
+  const THREE = await import(/* @vite-ignore */ 'three');
+  const { OrbitControls } = await import(
+    /* @vite-ignore */ 'three/addons/controls/OrbitControls.js'
   );
+  const { GLTFLoader } = await import(
+    /* @vite-ignore */ 'three/addons/loaders/GLTFLoader.js'
+  );
+  const { VRMLLoader } = await import(
+    /* @vite-ignore */ 'three/addons/loaders/VRMLLoader.js'
+  );
+  return { THREE, OrbitControls, GLTFLoader, VRMLLoader };
+}
+
+function createViewer(container, url, opts) {
+  const { interactive, THREE, OrbitControls, GLTFLoader, VRMLLoader } = opts;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+  if (!interactive) {
+    renderer.domElement.style.pointerEvents = 'none';
+  }
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    30, container.clientWidth / container.clientHeight, 0.001, 10000
+  );
+  camera.position.set(0, 80, 50);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir1.position.set(5, 10, 5);
+  scene.add(dir1);
+  const dir2 = new THREE.DirectionalLight(0xffffff, 0.3);
+  dir2.position.set(-3, 6, -3);
+  scene.add(dir2);
+
+  let controls = null;
+  if (interactive) {
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = false;
+    controls.minDistance = 0.1;
+    controls.maxDistance = 1000;
+  }
+
+  const isGLB = url.endsWith('.glb') || url.endsWith('.gltf');
+  const loader = isGLB ? new GLTFLoader() : new VRMLLoader();
+
+  loader.load(url, (result) => {
+    const obj = isGLB ? result.scene : result;
+    const box = new THREE.Box3().setFromObject(obj);
+    const center = box.getCenter(new THREE.Vector3());
+    obj.position.sub(center);
+    scene.add(obj);
+
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    const margin = interactive ? 1.2 : 1.3;
+    const dist = Math.abs(maxDim / (2 * Math.tan(fov / 2))) * margin;
+    camera.position.set(0, dist * 0.5, dist);
+    camera.lookAt(0, 0, 0);
+    if (controls) {
+      controls.target.set(0, 0, 0);
+      controls.update();
+    }
+  });
+
+  let animId;
+  function animate() {
+    animId = requestAnimationFrame(animate);
+    if (controls) controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  const onResize = () => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  };
+  window.addEventListener('resize', onResize);
+
+  return () => {
+    cancelAnimationFrame(animId);
+    window.removeEventListener('resize', onResize);
+    if (controls) controls.dispose();
+    renderer.dispose();
+    if (container.contains(renderer.domElement)) {
+      container.removeChild(renderer.domElement);
+    }
+  };
+}
+
+function ThreeViewer({ url, interactive = false }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    let cleanup = null;
+    let disposed = false;
+
+    loadThreeDeps().then((deps) => {
+      if (disposed || !ref.current) return;
+      cleanup = createViewer(ref.current, url, { interactive, ...deps });
+    });
+
+    return () => {
+      disposed = true;
+      if (cleanup) cleanup();
+    };
+  }, [url, interactive]);
+
+  return <div ref={ref} style={{ width: '100%', height: '100%' }} />;
 }
 
 export default function PCBViewer({ url, title, description }) {
@@ -94,7 +154,7 @@ export default function PCBViewer({ url, title, description }) {
         onClick={open}
       >
         <div className="relative w-full" style={{ height: '280px' }}>
-          <StaticPreview url={url} />
+          <ThreeViewer url={url} interactive={false} />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all
                           flex items-center justify-center opacity-0 group-hover:opacity-100"
                style={{ pointerEvents: 'none' }}>
@@ -158,32 +218,7 @@ export default function PCBViewer({ url, title, description }) {
           </div>
 
           <div style={{ flex: 1, cursor: 'grab', minHeight: 0 }}>
-            <Canvas
-              dpr={[1, 1.5]}
-              camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
-              gl={{ antialias: true, powerPreference: 'high-performance' }}
-            >
-              <ambientLight intensity={0.8} />
-              <directionalLight position={[5, 10, 5]} intensity={1.0} />
-              <directionalLight position={[-3, 6, -3]} intensity={0.3} />
-              <Suspense fallback={null}>
-                <Bounds fit clip observe margin={1.2}>
-                  <FitToView>
-                    <Center>
-                      <Model url={url} />
-                    </Center>
-                  </FitToView>
-                </Bounds>
-              </Suspense>
-              <OrbitControls
-                enablePan={true}
-                enableZoom={true}
-                enableRotate={true}
-                enableDamping={false}
-                minDistance={0.1}
-                maxDistance={1000}
-              />
-            </Canvas>
+            <ThreeViewer url={url} interactive={true} />
           </div>
 
           <div style={{
