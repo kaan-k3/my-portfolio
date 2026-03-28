@@ -168,77 +168,31 @@ import ProjectCard from "../components/ProjectCard.jsx";
 
         <ProjectCard
           client:only="react"
-          title="Eastern Edge Robotics"
-          subtitle="Software/Electrical · Sep 2024 – Present"
-          description="Built mechanical assemblies for an underwater ROV. Investigating CANBus/RS-485 protocols and writing embedded C++ on Raspberry Pi for subsystem control."
-          logo="/logos/eastern-edge.png"
-          contextTag="Team"
-          contextType="team"
-          href="/projects/eastern-edge"
-          tags={["C++", "CANBus", "RS-485", "Raspberry Pi", "OnShape"]}
-          modalDescription="Eastern Edge Robotics is Memorial University's competitive underwater robotics team, building ROVs to compete in the MATE international competition."
+          title="OERC Research — Maritime Autonomy"
+          subtitle="Ocean Engineering Research Center · Jan – May 2026"
+          description="C++/OpenGL ship hull visualization, MASS connectivity research report, and autonomous model vessel with PID-based wall tracking and obstacle avoidance."
+          thumbnail="/projects/oerc/boat-thumb.png"
+          logo="/logos/mun-engineering.png"
+          logoClass="bg-white/10 p-1"
+          contextTag="Work"
+          contextType="work"
+          href="/projects/oerc"
+          tags={["C++", "OpenGL", "NURBS", "Arduino", "LiDAR", "PID Control"]}
+          modalDescription="Research work at the Ocean Engineering Research Center under Dr. Wei Qiu, spanning three distinct projects in maritime autonomy and scientific computing."
           highlights={[
-            "Designed and assembled mechanical components for the ROV frame and tooling systems",
-            "Investigating CANBus and RS-485 communication protocols for reliable subsystem control",
-            "Writing embedded C++ on Raspberry Pi for motor drivers and sensor integration",
-            "Collaborating across software, electrical, and mechanical sub-teams"
+            "Built a C++/OpenGL desktop application for interactive 3D visualization of ship hull geometry — parsing IGES files to render NURBS surfaces, control nets, and surface normals",
+            "Authored a comprehensive research report on Maritime Autonomous Surface Ship connectivity requirements aligned with IMO and Transport Canada frameworks",
+            "Designed and built an autonomous model vessel with Arduino and LiDAR using embedded PID-based control for wall tracking and obstacle avoidance"
           ]}
         />
       </div>
     </div>
 
-    <!-- Scientific Computing & Research -->
-    <div class="mb-14 fade-section">
-      <div class="flex items-center gap-3 mb-8">
-        <span class="inline-block w-2.5 h-2.5 rounded-full bg-sky-400/80"></span>
-        <h3 class="font-display text-2xl font-700 text-white/85">Scientific Computing & Research</h3>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2 stagger">
-        <div class="sm:col-span-2">
-          <ProjectCard
-            client:only="react"
-            title="OERC Research — Maritime Autonomy"
-            subtitle="Ocean Engineering Research Center · Jan – May 2026"
-            description="C++/OpenGL ship hull visualization, MASS connectivity research report, and autonomous model vessel with PID-based wall tracking and obstacle avoidance."
-            logo="/logos/mun-engineering.png"
-            logoClass="bg-white/10 p-1"
-            contextTag="Work"
-            contextType="work"
-            href="/projects/oerc"
-            tags={["C++", "OpenGL", "NURBS", "IGES", "Arduino", "LiDAR", "PID Control", "Research"]}
-            modalDescription="Research work at the Ocean Engineering Research Center under Dr. Wei Qiu, spanning three distinct projects in maritime autonomy and scientific computing."
-            highlights={[
-              "Built a C++/OpenGL desktop application for interactive 3D visualization of ship hull geometry — parsing IGES files to render NURBS surfaces, control nets, and surface normals",
-              "Authored a comprehensive research report on Maritime Autonomous Surface Ship connectivity requirements aligned with IMO and Transport Canada frameworks",
-              "Designed and built an autonomous model vessel with Arduino and LiDAR using embedded PID-based control for wall tracking and obstacle avoidance"
-            ]}
-          />
-        </div>
-
-        <div class="glass-card p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-md bg-sky-500/15 flex items-center justify-center text-sky-400 font-mono text-xs mt-0.5">Bio</div>
-              <div>
-                <h4 class="font-display font-600 text-white/85">Biology & Chemistry Research</h4>
-                <p class="text-xs font-mono text-white/30 mt-0.5">Academic · 2024 – 2025</p>
-              </div>
-            </div>
-            <span class="context-tag context-tag--personal">Personal</span>
-          </div>
-          <p class="text-sm text-white/50 leading-relaxed mb-3">Data-driven research using statistical hypothesis testing and meta-analysis to uncover patterns and validate experimental findings in biology and chemistry.</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <span class="tech-tag">Statistics</span><span class="tech-tag">Meta-Analysis</span><span class="tech-tag">Python</span><span class="tech-tag">Research</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Data Infrastructure & Trading -->
+    <!-- Data Infra & ML for Finance -->
     <div class="mb-14 fade-section">
       <div class="flex items-center gap-3 mb-8">
         <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
-        <h3 class="font-display text-2xl font-700 text-white/85">Data Infrastructure & Trading</h3>
+        <h3 class="font-display text-2xl font-700 text-white/85">Data Infra & ML for Finance</h3>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 stagger">
         <div class="sm:col-span-2">
@@ -286,6 +240,25 @@ import ProjectCard from "../components/ProjectCard.jsx";
             "Built a Flask web dashboard for at-a-glance performance metrics and match history",
             "Created a Discord bot for team-accessible stats lookups and automated match notifications",
             "Wired an Arduino OLED display showing live KD, win rate, and rank data as a desk widget"
+          ]}
+        />
+
+        <ProjectCard
+          client:only="react"
+          title="Eastern Edge Robotics"
+          subtitle="Software/Electrical · Sep 2024 – Present"
+          description="Built mechanical assemblies for an underwater ROV. Investigating CANBus/RS-485 protocols and writing embedded C++ on Raspberry Pi for subsystem control."
+          logo="/logos/eastern-edge.png"
+          contextTag="Team"
+          contextType="team"
+          href="/projects/eastern-edge"
+          tags={["C++", "CANBus", "RS-485", "Raspberry Pi", "OnShape"]}
+          modalDescription="Eastern Edge Robotics is Memorial University's competitive underwater robotics team, building ROVs to compete in the MATE international competition."
+          highlights={[
+            "Designed and assembled mechanical components for the ROV frame and tooling systems",
+            "Investigating CANBus and RS-485 communication protocols for reliable subsystem control",
+            "Writing embedded C++ on Raspberry Pi for motor drivers and sensor integration",
+            "Collaborating across software, electrical, and mechanical sub-teams"
           ]}
         />
       </div>
