@@ -34,43 +34,73 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <div class="space-y-3 text-sm text-white/50 leading-relaxed mb-5">
           <p>
             AEGIS (Autonomous Environmental Guardian for Intelligent Search-and-Rescue) is a
-            scale-model demonstrator targeting IMO Level 2/3 autonomy. The problem it addresses
-            is straightforward: Canada's coastline is massive, Arctic conditions are harsh, and
-            there aren't enough SAR crews to cover it all. The vessel does continuous thermal
-            patrol, scanning for people in the water.
+            scale-model demonstrator targeting <span class="text-white/70">IMO Level 2/3 autonomy</span>.
+            It is both a proof-of-concept and a proposed solution for a real operational gap:
+            Canada has the longest coastline in the world, Arctic conditions make crewed patrols
+            dangerous and expensive, and existing SAR fleets can't cover it all. AEGIS is designed
+            to act as a forward-deployed search drone, arriving at the scene ahead of Coast Guard
+            crews through continuous <span class="text-white/70">thermal patrol</span> to detect
+            people in the water and monitor conditions in real time. The project ties directly back
+            to my <a href="#mass-report" class="text-white/70 underline underline-offset-2 decoration-white/20 hover:decoration-white/40">MASS connectivity research</a>,
+            which mapped out the communication and autonomy frameworks that informed how AEGIS
+            handles sensor fusion, decision-making, and connectivity failover.
           </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Platform & propulsion</h4>
           <p>
-            It started as my ONAE 6055 course project — an Arduino Uno with an L298N H-bridge
-            driving a DC motor, a rudder servo, and LiDAR sensors for PID-based wall tracking.
-            For the Fueling the Future Fest poster competition I reframed it as AEGIS and added
-            a solar-powered independent sensor bus (5V solar panel, TP4056 charger, 18650 cell,
-            MT3608 boost converter) that powers the SAR payload independently from the main
-            propulsion LiPo.
+            The vessel started as my ONAE 6055 course project. The propulsion system runs on an
+            <span class="text-white/70">Arduino Uno</span> with an <span class="text-white/70">L298N
+            dual H-bridge</span> driving a brushed DC motor, a rudder servo for steering, and
+            <span class="text-white/70">LiDAR sensors</span> feeding a <span class="text-white/70">PID
+            control loop</span> for wall tracking and obstacle avoidance. For the Fueling the Future
+            Fest poster competition I reframed the project as AEGIS and added a
+            <span class="text-white/70">solar-powered independent sensor bus</span> (5V solar panel,
+            <span class="text-white/70">TP4056</span> charge controller, 18650 Li-ion cell,
+            <span class="text-white/70">MT3608</span> boost converter) that powers the entire SAR
+            payload independently from the main propulsion LiPo. This separation means sensor
+            systems stay online even if the drive battery is depleted.
           </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Dual-processor architecture</h4>
           <p>
-            The architecture is dual-processor. The Uno handles real-time motor PID and rudder
-            control — proven code I didn't want to touch. A Pi Zero 2 W handles everything
-            compute-heavy: the thermal imaging pipeline, camera-based obstacle detection via OpenCV,
-            GPS/IMU logging, WiFi streaming to a ground station, and 3D thermal map generation.
-            They communicate over UART serial.
+            The system runs a split architecture over <span class="text-white/70">UART serial</span>.
+            The Uno owns all real-time motor <span class="text-white/70">PID</span> and rudder control,
+            keeping latency-critical code on proven hardware. A <span class="text-white/70">Raspberry Pi
+            Zero 2 W</span> handles everything compute-heavy: the thermal imaging pipeline,
+            camera-based obstacle detection through <span class="text-white/70">OpenCV</span>,
+            <span class="text-white/70">GPS/IMU</span> logging, WiFi streaming to a ground station,
+            and 3D thermal map generation.
           </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Thermal scanning & detection</h4>
           <p>
-            Thermal detection runs on an MLX90640 32×24 thermal array mounted on a servo, doing
-            a 4-position sweep for 360° coverage using the sensor's 110° wide-angle FOV. Each
-            sweep produces a georeferenced thermal frame tagged with GPS coordinates and IMU
-            orientation, logged to SD and optionally streamed live. The point is to build a
-            real-time 3D thermal point cloud of the boat's surroundings, where human heat
-            signatures (~30°C+) pop against cold water. When the system detects a warm cluster,
-            it triggers LEDs and a piezo buzzer to mark the location.
+            The primary SAR sensor is an <span class="text-white/70">MLX90640 32×24 thermal array</span>
+            mounted on a servo. It performs a 4-position sweep using the sensor's 110° wide-angle FOV
+            for full 360° coverage. Each sweep produces a georeferenced thermal frame tagged with
+            <span class="text-white/70">GPS coordinates</span> and <span class="text-white/70">IMU
+            orientation</span>, logged to SD and optionally streamed live. These frames are composited
+            into a real-time <span class="text-white/70">3D thermal point cloud</span> of the vessel's
+            surroundings, where human heat signatures (~30°C+) are clearly distinguishable against
+            cold open water. When the system detects a warm cluster above threshold, it triggers
+            LEDs and a piezo buzzer to mark the detection location.
           </p>
-          <p>
-            A Pi Camera Module on the CSI port handles forward-looking visual obstacle detection
-            through OpenCV, working alongside the LiDAR's range-based avoidance.
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Proposed: camera-based pathfinding</h4>
+          <p class="text-white/40">
+            If time and budget permit, the next sensor addition is a <span class="text-white/50">Pi
+            Camera Module</span> on the CSI port for forward-looking visual obstacle detection via
+            <span class="text-white/50">OpenCV</span>, complementing the LiDAR's range-based avoidance
+            with image-based classification of obstacles and debris.
           </p>
-          <p class="text-white/40 italic">
-            Next: a custom KiCad carrier PCB that sits under the Pi Zero 2 W as a HAT-style board,
-            consolidating power management, I2C headers (MLX90640, GPS, IMU), servo output, UART
-            crossover to the Uno, CSI passthrough, and status LEDs into one clean board.
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">In progress: custom carrier PCB</h4>
+          <p class="text-white/40">
+            Currently designing a custom <span class="text-white/50">KiCad carrier PCB</span> that
+            mounts under the Pi Zero 2 W as a HAT-style board. It consolidates
+            <span class="text-white/50">power management</span>,
+            <span class="text-white/50">I2C</span> sensor headers (MLX90640, GPS, IMU),
+            servo output, UART crossover to the Uno, CSI passthrough, and status LEDs into one
+            clean board, replacing the current breadboard wiring.
           </p>
         </div>
         <PhotoGallery
@@ -108,7 +138,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
       </div>
 
       <!-- MASS report -->
-      <div class="glass-card p-6">
+      <div id="mass-report" class="glass-card p-6">
         <h3 class="font-display font-600 text-white/85 mb-2">MASS connectivity research</h3>
         <p class="text-xs font-mono text-white/25 mb-3">Technical writing · IMO standards · Transport Canada</p>
         <p class="text-sm text-white/50 leading-relaxed">
