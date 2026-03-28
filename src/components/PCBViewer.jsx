@@ -52,7 +52,7 @@ function LoadingSpinner() {
         width: '32px',
         height: '32px',
         border: '2px solid rgba(255,255,255,0.08)',
-        borderTopColor: 'rgba(125,211,252,0.6)',
+        borderTopColor: 'rgba(255,255,255,0.5)',
         borderRadius: '50%',
         animation: 'pcb-spin 0.8s linear infinite',
       }} />
@@ -313,8 +313,8 @@ export default function PCBViewer({ url, thumbnail, title, description }) {
           transition: 'border-color 0.3s, box-shadow 0.3s',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(125,211,252,0.3)';
-          e.currentTarget.style.boxShadow = '0 4px 24px rgba(125,211,252,0.1)';
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(255,255,255,0.06)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';

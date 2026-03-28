@@ -130,12 +130,12 @@ export default function ProjectCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             {thumbnailBadge && (
               <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(125,211,252,0.7)" strokeWidth="2">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                   <path d="M2 17l10 5 10-5"/>
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
-                <span className="text-[10px] font-mono text-sky-300/60">{thumbnailBadge}</span>
+                <span className="text-[10px] font-mono text-white/50">{thumbnailBadge}</span>
               </div>
             )}
           </div>
@@ -231,7 +231,7 @@ export default function ProjectCard({
                       width: '5px',
                       height: '5px',
                       borderRadius: '50%',
-                      background: 'rgba(125,211,252,0.5)',
+                      background: 'rgba(255,255,255,0.4)',
                       marginTop: '7px',
                     }} />
                     <span style={{
@@ -261,9 +261,9 @@ export default function ProjectCard({
                   gap: '8px',
                   padding: '10px 22px',
                   borderRadius: '10px',
-                  background: 'rgba(125,211,252,0.1)',
-                  border: '1px solid rgba(125,211,252,0.25)',
-                  color: '#7dd3fc',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: 'rgba(255,255,255,0.7)',
                   fontSize: '13px',
                   fontWeight: 600,
                   fontFamily: 'JetBrains Mono, monospace',
@@ -271,12 +271,12 @@ export default function ProjectCard({
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(125,211,252,0.18)';
-                  e.currentTarget.style.borderColor = 'rgba(125,211,252,0.4)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(125,211,252,0.1)';
-                  e.currentTarget.style.borderColor = 'rgba(125,211,252,0.25)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
                 }}
               >
                 View full project

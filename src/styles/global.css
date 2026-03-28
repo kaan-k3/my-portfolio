@@ -11,8 +11,8 @@
   --color-glass: rgba(255, 255, 255, 0.04);
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-border-hover: rgba(255, 255, 255, 0.16);
-  --color-accent: #7dd3fc;
-  --color-accent-dim: rgba(125, 211, 252, 0.12);
+  --color-accent: rgba(255, 255, 255, 0.6);
+  --color-accent-dim: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Base ──────────────────────────────────────── */
@@ -23,7 +23,7 @@ html {
 }
 
 ::selection {
-  background: rgba(125, 211, 252, 0.25);
+  background: rgba(255, 255, 255, 0.2);
   color: #f1f5f9;
 }
 
@@ -274,9 +274,9 @@ html {
 }
 
 .section-title {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: clamp(1.8rem, 4vw, 2.75rem);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.15;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2rem;
