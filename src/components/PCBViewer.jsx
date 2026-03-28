@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
-import { Canvas, useLoader, useThree } from '@react-three/fiber';
+import { useState, useRef, useEffect, Suspense, useCallback, useMemo } from 'react';
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, Bounds, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 
-// Uses drei's Bounds to automatically fit camera to content
+/* ────────────────────────────────────────────────
+   Scene internals (shared between preview & full)
+   ──────────────────────────────────────────────── */
+
 function FitToView({ children }) {
   const bounds = useBounds();
-  useEffect(() => {
-    bounds.refresh().clip().fit();
-  }, [bounds]);
+  useEffect(() => { bounds.refresh().clip().fit(); }, [bounds]);
   return <>{children}</>;
 }
 
@@ -18,17 +19,32 @@ function PCBModel({ url }) {
   return <primitive object={scene} />;
 }
 
-// Static thumbnail — fixed camera, no controls
-function StaticPreview({ url }) {
+// Slow auto-spin for the thumbnail preview
+function AutoSpin({ speed = 0.15 }) {
+  const { scene } = useThree();
+  useFrame((_, delta) => {
+    scene.rotation.y += speed * delta;
+  });
+  return null;
+}
+
+/* ────────────────────────────────────────────────
+   Thumbnail preview — auto-spinning, non-interactive
+   ──────────────────────────────────────────────── */
+
+function ThumbnailCanvas({ url }) {
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
       style={{ pointerEvents: 'none' }}
+      frameloop="always"
+      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
     >
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[5, 10, 5]} intensity={1.0} />
-      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[5, 10, 5]} intensity={1.2} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.4} />
+      <directionalLight position={[0, -5, 5]} intensity={0.15} />
       <Suspense fallback={null}>
         <Bounds fit clip observe margin={1.3}>
           <FitToView>
@@ -38,22 +54,47 @@ function StaticPreview({ url }) {
           </FitToView>
         </Bounds>
       </Suspense>
+      <AutoSpin />
     </Canvas>
   );
 }
 
-// Interactive fullscreen scene with orbit controls
-function InteractiveView({ url }) {
+/* ────────────────────────────────────────────────
+   Interactive fullscreen viewer
+   ──────────────────────────────────────────────── */
+
+function ControlsWithRef({ controlsRef, onInteract }) {
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enablePan={true}
+      enableZoom={true}
+      enableRotate={true}
+      enableDamping={true}
+      dampingFactor={0.08}
+      rotateSpeed={0.8}
+      zoomSpeed={1.0}
+      panSpeed={0.6}
+      minDistance={0.1}
+      maxDistance={1000}
+      onChange={onInteract}
+    />
+  );
+}
+
+function InteractiveCanvas({ url, controlsRef, onInteract }) {
   return (
     <Canvas
       dpr={[1, 2]}
       camera={{ fov: 30, near: 0.001, far: 10000, position: [0, 80, 50] }}
+      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
     >
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[5, 10, 5]} intensity={1.0} />
-      <directionalLight position={[-3, 6, -3]} intensity={0.3} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[5, 10, 5]} intensity={1.2} />
+      <directionalLight position={[-3, 6, -3]} intensity={0.4} />
+      <directionalLight position={[0, -5, 5]} intensity={0.15} />
       <Suspense fallback={null}>
-        <Bounds fit clip observe margin={1.2}>
+        <Bounds fit clip observe margin={1.15}>
           <FitToView>
             <Center>
               <PCBModel url={url} />
@@ -61,29 +102,80 @@ function InteractiveView({ url }) {
           </FitToView>
         </Bounds>
       </Suspense>
-      <OrbitControls
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        minDistance={0.1}
-        maxDistance={1000}
-      />
+      <ControlsWithRef controlsRef={controlsRef} onInteract={onInteract} />
     </Canvas>
   );
 }
 
+/* ────────────────────────────────────────────────
+   Viewer topbar with Reset / Top View / Wireframe
+   ──────────────────────────────────────────────── */
+
+const btnBase = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '5px',
+  padding: '6px 13px',
+  borderRadius: '8px',
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'rgba(255,255,255,0.04)',
+  color: 'rgba(255,255,255,0.6)',
+  fontSize: '12px',
+  fontWeight: 500,
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  transition: 'all 0.2s',
+};
+
+const btnActive = {
+  ...btnBase,
+  background: 'rgba(125, 211, 252, 0.15)',
+  color: '#7dd3fc',
+  borderColor: 'rgba(125, 211, 252, 0.3)',
+};
+
+const closeBtnStyle = {
+  width: '32px',
+  height: '32px',
+  borderRadius: '50%',
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'transparent',
+  cursor: 'pointer',
+  fontSize: '16px',
+  color: 'rgba(255,255,255,0.5)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  transition: 'all 0.2s',
+  padding: 0,
+  lineHeight: 1,
+};
+
+/* ────────────────────────────────────────────────
+   Main PCBViewer component
+   ──────────────────────────────────────────────── */
+
 export default function PCBViewer({ url, title, description }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [hintsVisible, setHintsVisible] = useState(true);
+  const controlsRef = useRef(null);
 
   const open = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsOpen(true);
+    setHintsVisible(true);
   }, []);
 
-  const close = useCallback(() => {
+  const close = useCallback((e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     setIsOpen(false);
   }, []);
+
+  // Hide hints after first interaction
+  const onInteract = useCallback(() => {
+    if (hintsVisible) setHintsVisible(false);
+  }, [hintsVisible]);
 
   // Escape to close
   useEffect(() => {
@@ -99,88 +191,172 @@ export default function PCBViewer({ url, title, description }) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Reset camera
+  const resetCamera = useCallback(() => {
+    if (controlsRef.current) {
+      controlsRef.current.reset();
+    }
+  }, []);
+
   return (
     <>
-      {/* Static thumbnail */}
+      {/* ──── Thumbnail card ──── */}
       <div
-        className="rounded-xl border border-white/10 overflow-hidden bg-black/40
-                   cursor-pointer group transition-all hover:border-white/20"
         onClick={open}
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          background: '#0c0c14',
+          cursor: 'pointer',
+          border: '1.5px solid rgba(255,255,255,0.08)',
+          transition: 'border-color 0.3s, box-shadow 0.3s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(125,211,252,0.3)';
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(125,211,252,0.1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
       >
-        <div className="relative w-full" style={{ height: '280px' }}>
-          <StaticPreview url={url} />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all
-                          flex items-center justify-center opacity-0 group-hover:opacity-100"
-               style={{ pointerEvents: 'none' }}>
-            <span className="px-4 py-2 text-sm font-mono bg-black/70 border border-white/20
-                           rounded-lg text-white/80 backdrop-blur-sm">
-              Click to interact in 3D
-            </span>
-          </div>
+        <ThumbnailCanvas url={url} />
+
+        {/* Label overlay at bottom */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0, left: 0, right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '10px',
+          background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+          color: 'rgba(255,255,255,0.8)',
+          fontSize: '12px',
+          fontWeight: 600,
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          fontFamily: 'JetBrains Mono, monospace',
+          pointerEvents: 'none',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ opacity: 0.6 }}>
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          Click to explore 3D model
         </div>
+
+        {/* Title bar */}
         {(title || description) && (
-          <div className="px-4 py-3 border-t border-white/[0.06]">
-            {title && <p className="text-sm font-semibold text-white/80" style={{ fontFamily: 'Syne, sans-serif' }}>{title}</p>}
-            {description && <p className="text-xs text-white/40 mt-0.5">{description}</p>}
+          <div style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: 'linear-gradient(rgba(0,0,0,0.6), transparent)',
+            pointerEvents: 'none',
+          }}>
+            <div>
+              {title && <span style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', fontFamily: 'Syne, sans-serif' }}>{title}</span>}
+              {description && <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginLeft: '10px' }}>{description}</span>}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Fullscreen modal — uses a real portal-style overlay above everything */}
+      {/* ──── Fullscreen overlay ──── */}
       {isOpen && (
         <div style={{
           position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
+          inset: 0,
           zIndex: 999999,
-          background: '#000',
+          background: 'rgba(0,0,0,0.95)',
           display: 'flex',
           flexDirection: 'column',
         }}>
-          {/* Header */}
+          {/* Topbar — flex child, no z-index needed */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 24px',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            padding: '12px 20px',
+            background: 'rgba(12,12,20,0.95)',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
             flexShrink: 0,
           }}>
-            <div>
-              {title && <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '18px', fontWeight: 600, color: 'rgba(255,255,255,0.9)', margin: 0 }}>{title}</p>}
-              {description && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>{description}</p>}
-            </div>
-            <button
-              onClick={close}
-              style={{
-                padding: '8px 16px',
+            {/* Left: title */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <span style={{
+                fontFamily: 'Syne, sans-serif',
                 fontSize: '14px',
-                fontFamily: 'JetBrains Mono, monospace',
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '8px',
-                color: 'rgba(255,255,255,0.8)',
-                cursor: 'pointer',
-              }}
-            >
-              ✕ Close
-            </button>
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.9)',
+                letterSpacing: '0.3px',
+              }}>{title || '3D Model'}</span>
+              <span style={{
+                fontSize: '12px',
+                color: 'rgba(255,255,255,0.3)',
+              }}>KiCad 3D Model</span>
+            </div>
+
+            {/* Right: buttons + close */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={resetCamera}
+                style={btnBase}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = btnBase.background; e.currentTarget.style.color = btnBase.color; }}
+              >Reset</button>
+              <button
+                onClick={close}
+                style={closeBtnStyle}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = closeBtnStyle.color; }}
+              >✕</button>
+            </div>
           </div>
 
-          {/* 3D Viewer */}
-          <div style={{ flex: 1, cursor: 'grab' }}>
-            <InteractiveView url={url} />
-          </div>
+          {/* Canvas area */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#0c0c14' }}>
+            <InteractiveCanvas url={url} controlsRef={controlsRef} onInteract={onInteract} />
 
-          {/* Footer */}
-          <div style={{
-            padding: '10px 24px',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            textAlign: 'center',
-            flexShrink: 0,
-          }}>
-            <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'rgba(255,255,255,0.25)' }}>
-              Drag to rotate · Scroll to zoom · Right-click to pan · Esc to close
-            </span>
+            {/* Hints pill at bottom */}
+            <div style={{
+              position: 'absolute',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              gap: '18px',
+              padding: '9px 20px',
+              borderRadius: '99px',
+              background: 'rgba(12,12,20,0.75)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              fontSize: '11px',
+              color: 'rgba(255,255,255,0.35)',
+              pointerEvents: 'none',
+              transition: 'opacity 0.5s',
+              opacity: hintsVisible ? 1 : 0,
+              whiteSpace: 'nowrap',
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Drag</kbd> Rotate
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Scroll</kbd> Zoom
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <kbd style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>Right drag</kbd> Pan
+              </span>
+            </div>
           </div>
         </div>
       )}
