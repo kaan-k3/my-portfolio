@@ -16,10 +16,10 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
     <p class="text-white/55 leading-relaxed max-w-2xl">
-      Three projects under Dr. Wei Qiu at Memorial's Ocean Engineering Research Center,
-      all tied to maritime autonomy: a C++/OpenGL tool for hull geometry visualization,
-      a research report on autonomous vessel communications for IMO/Transport Canada frameworks,
-      and AEGIS, a scale-model autonomous SAR vessel I designed and built from scratch.
+      Three projects under Dr. Wei Qiu at Memorial's Ocean Engineering Research Center.
+      I built a C++/OpenGL desktop app for hull geometry visualization and hydrodynamic analysis,
+      wrote a research report on autonomous vessel communications for IMO/Transport Canada,
+      and designed and built AEGIS, a scale-model autonomous SAR vessel, from scratch.
     </p>
   </section>
 
@@ -34,67 +34,78 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <div class="space-y-3 text-sm text-white/50 leading-relaxed mb-5">
           <p>
             AEGIS (Autonomous Environmental Guardian for Intelligent Search-and-Rescue) is a
-            scale-model demonstrator targeting <span class="text-white/70">IMO Level 2/3 autonomy</span>.
-            It is both a proof-of-concept and a proposed solution for a real operational gap:
-            Canada has the longest coastline in the world, Arctic conditions make crewed patrols
-            dangerous and expensive, and existing SAR fleets can't cover it all. AEGIS is designed
-            to act as a forward-deployed search drone, arriving at the scene ahead of Coast Guard
-            crews through continuous <span class="text-white/70">thermal patrol</span> to detect
-            people in the water and monitor conditions in real time. The project ties directly back
-            to my <a href="#mass-report" class="text-white/70 underline underline-offset-2 decoration-white/20 hover:decoration-white/40">MASS connectivity research</a>,
-            which mapped out the communication and autonomy frameworks that informed how AEGIS
-            handles sensor fusion, decision-making, and connectivity failover.
+            scale-model vessel targeting <span class="text-white/70">IMO Level 2/3 autonomy</span>.
+            The problem it addresses is straightforward: Canada has the longest coastline in the world,
+            Arctic conditions make crewed SAR patrols dangerous and expensive, and existing fleets
+            can't cover it all. AEGIS is meant to fill that gap as a forward-deployed thermal search
+            drone that gets to the scene ahead of Coast Guard crews, scanning for people in the water
+            and relaying conditions back to shore. The autonomy and comms architecture came out of
+            my <a href="#mass-report" class="text-white/70 underline underline-offset-2 decoration-white/20 hover:decoration-white/40">MASS connectivity research</a>,
+            which I did first specifically to figure out how a vessel like this should handle
+            sensor fusion, decision-making, and connectivity failover when satellite links drop.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Platform & propulsion</h4>
           <p>
-            The propulsion system runs on an
-            <span class="text-white/70">Arduino Uno</span> with an <span class="text-white/70">L298N
-            dual H-bridge</span> driving a brushed DC motor, a rudder servo for steering, and
-            <span class="text-white/70">LiDAR sensors</span> feeding a <span class="text-white/70">PID
-            control loop</span> for wall tracking and obstacle avoidance.
+            An <span class="text-white/70">Arduino Uno</span> drives the propulsion system through
+            an <span class="text-white/70">L298N dual H-bridge</span> controlling a brushed DC
+            thruster motor and a rudder servo. Two <span class="text-white/70">VL53L0X LiDAR
+            sensors</span> (forward and starboard) feed distance readings into a
+            <span class="text-white/70">PID control loop</span> running at ~50 Hz for wall tracking
+            and obstacle avoidance. Tuning the PID gains for the tank environment took most of
+            the testing time since the hull's drag characteristics change a lot between dry-run
+            bench tests and actual water.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Dual-processor architecture</h4>
           <p>
-            The system runs a split architecture over <span class="text-white/70">UART serial</span>.
-            The Uno owns all real-time motor <span class="text-white/70">PID</span> and rudder control,
-            keeping latency-critical code on proven hardware. A <span class="text-white/70">Raspberry Pi
-            Zero 2 W</span> handles everything compute-heavy: the thermal imaging pipeline,
-            camera-based obstacle detection through <span class="text-white/70">OpenCV</span>,
-            <span class="text-white/70">GPS/IMU</span> logging, WiFi streaming to a ground station,
-            and 3D thermal map generation.
+            The system splits across two processors over <span class="text-white/70">UART serial
+            </span> at 115200 baud. The Uno handles all real-time motor
+            <span class="text-white/70">PID</span> and rudder control, because it needs
+            deterministic loop timing and the Pi can't guarantee that. The
+            <span class="text-white/70">Raspberry Pi Zero 2 W</span> runs the compute-heavy
+            side: thermal imaging pipeline, camera-based obstacle detection through
+            <span class="text-white/70">OpenCV</span>,
+            <span class="text-white/70">GPS/IMU</span> logging at 10 Hz, WiFi telemetry to the
+            ground station, and 3D thermal map compositing. Commands flow Pi-to-Uno as simple
+            ASCII packets (heading setpoints, speed targets), and the Uno sends back sensor
+            telemetry and status flags.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Thermal scanning & detection</h4>
           <p>
-            The primary SAR sensor is an <span class="text-white/70">MLX90640 32×24 thermal array</span>
-            mounted on a servo. It performs a 4-position sweep using the sensor's 110° wide-angle FOV
-            for full 360° coverage. Each sweep produces a georeferenced thermal frame tagged with
+            The SAR payload is an <span class="text-white/70">MLX90640 32×24 thermal array</span>
+            on a servo mount. It sweeps four positions using the sensor's 110° FOV to get full
+            360° azimuth coverage. Each frame is tagged with
             <span class="text-white/70">GPS coordinates</span> and <span class="text-white/70">IMU
-            orientation</span>, logged to SD and optionally streamed live. These frames are composited
-            into a real-time <span class="text-white/70">3D thermal point cloud</span> of the vessel's
-            surroundings, where human heat signatures (~30°C+) are clearly distinguishable against
-            cold open water. When the system detects a warm cluster above threshold, it triggers
-            LEDs and a piezo buzzer to mark the detection location.
+            orientation</span>, logged to SD card and optionally streamed to the ground station
+            over WiFi. The frames composite into a
+            <span class="text-white/70">3D thermal point cloud</span> of the vessel's
+            surroundings. Human body heat (~30°C+) stands out clearly against open water
+            at ~2-4°C, so the detection threshold is generous. When the system picks up a
+            warm cluster, it locks the heading, triggers indicator LEDs and a piezo buzzer, and
+            logs the GPS fix.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Proposed: camera-based pathfinding</h4>
           <p class="text-white/40">
-            If time and budget permit, the next sensor addition is a <span class="text-white/50">Pi
-            Camera Module</span> on the CSI port for forward-looking visual obstacle detection via
-            <span class="text-white/50">OpenCV</span>, complementing the LiDAR's range-based avoidance
-            with image-based classification of obstacles and debris.
+            Next sensor to add (if time and budget allow) is a <span class="text-white/50">Pi
+            Camera Module</span> on the CSI port for forward-looking obstacle detection via
+            <span class="text-white/50">OpenCV</span>. The LiDAR gives range-based avoidance but
+            can't tell you what the obstacle is. A camera feed with basic classification would
+            let the vessel distinguish debris from a kayak from a wave crest.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">In progress: custom carrier PCB</h4>
           <p class="text-white/40">
-            Currently designing a custom <span class="text-white/50">KiCad carrier PCB</span> that
-            mounts under the Pi Zero 2 W as a HAT-style board. It consolidates
-            <span class="text-white/50">power management</span>,
-            <span class="text-white/50">I2C</span> sensor headers (MLX90640, GPS, IMU),
-            servo output, UART crossover to the Uno, CSI passthrough, and status LEDs into one
-            clean board, replacing the current breadboard wiring.
+            I'm designing a <span class="text-white/50">KiCad carrier PCB</span> that mounts
+            under the Pi Zero 2 W as a HAT-style board. It consolidates
+            <span class="text-white/50">power regulation</span> (5 V and 3.3 V rails from a
+            single LiPo input),
+            <span class="text-white/50">I2C</span> sensor headers for the MLX90640, GPS, and IMU,
+            servo PWM output, UART crossover to the Uno, CSI passthrough for the camera, and
+            status LEDs. Basically replacing the rats-nest of breadboard jumper wires with
+            a single board.
           </p>
         </div>
         <PhotoGallery
@@ -111,51 +122,60 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         />
       </div>
 
-      <!-- GUI_MAPS -->
+      <!-- MAPS0 App -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-1">GUI_MAPS — NURBS Surface Viewer & Seakeeping Suite</h3>
+        <h3 class="font-display font-600 text-white/85 mb-1">MAPS0 App — NURBS Surface Viewer & Seakeeping Suite</h3>
         <p class="text-xs font-mono text-white/25 mb-3">C++17 · Qt 6 · OpenGL ES 2.0 · GLSL · CMake · MSVC 2022</p>
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
-            A desktop application that provides a graphical front-end for
-            <span class="text-white/70">MAPS0</span>, a frequency-domain hydrodynamic solver
-            for wave-body interaction analysis developed at the OERC. Before this tool existed,
-            MAPS0 was command-line only with manual input file editing. GUI_MAPS wraps the entire
-            pipeline — geometry preprocessing, solver execution, and results post-processing — into
-            one interface built with <span class="text-white/70">C++17</span> and
-            <span class="text-white/70">Qt 6</span> (Widgets, OpenGL, Charts).
+            <span class="text-white/70">MAPS0</span> is a frequency-domain potential flow solver
+            for wave-body interaction analysis, developed at the OERC. It had no GUI. You'd hand-edit
+            plaintext <span class="text-white/70">.in</span> config files, run the binary from a
+            terminal, then parse output files separately. I built a desktop app in
+            <span class="text-white/70">C++17</span> and <span class="text-white/70">Qt 6</span>
+            that wraps the full pipeline: geometry import and inspection, solver configuration and
+            execution, and post-processing with interactive charts, all in one window.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Geometry & visualization</h4>
           <p>
-            Parses <span class="text-white/70">IGES files</span> (Entity 128) and renders
-            <span class="text-white/70">NURBS</span> hull surfaces with GPU-accelerated
-            <span class="text-white/70">OpenGL</span> shading via custom
-            <span class="text-white/70">GLSL shaders</span>. Supports multi-body visualization
-            in a shared global coordinate system — each body gets independent position, heading,
-            and color palette. You can inspect and edit per-patch surface normals with undo, backup,
-            and IGES rewrite. It also loads MAPS0 <span class="text-white/70">.geom</span> output
-            files to overlay computed <span class="text-white/70">Gaussian quadrature points</span>
-            and surface normals directly on the hull mesh.
+            The viewer reads <span class="text-white/70">IGES files</span> (Entity 128 NURBS
+            surfaces) and tessellates them on the GPU through custom
+            <span class="text-white/70">GLSL shaders</span> with per-fragment Phong lighting.
+            Each hull body sits in a shared world-space coordinate system with its own position,
+            heading, and color palette, so you can load multi-body configs (catamarans, trimaran
+            floats, barges alongside a vessel) and see them together. Surface normals are editable
+            per-patch with full undo and IGES rewrite, since MAPS0 is sensitive to normal
+            orientation and a single flipped patch will blow up the solution. The app also overlays
+            MAPS0 <span class="text-white/70">.geom</span> output, plotting the computed
+            <span class="text-white/70">Gaussian quadrature points</span> and evaluated surface
+            normals directly on the mesh so you can verify discretization quality before running
+            a full solve.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Analysis workflow</h4>
           <p>
-            GUI dialogs expose all MAPS0 input parameters: hull dimensions, mass properties, wave
-            conditions, 25+ solver control flags, per-patch Gauss point configuration, and multi-body
-            definitions. The tool assembles the complete <span class="text-white/70">.in project file</span>
-            and launches the solver with real-time console output streaming. Handles zero-speed and
-            forward-speed cases, <span class="text-white/70">irregular frequency removal</span>,
-            drift forces, catamaran/trimaran rigid-body coupling, and random sea statistics.
+            All MAPS0 input parameters are exposed through form dialogs: principal dimensions,
+            mass and inertia matrices, wave heading and frequency ranges, per-patch Gauss point
+            counts, and 25+ solver control flags. The app assembles the complete
+            <span class="text-white/70">.in project file</span> and launches the solver
+            as a child process with stdout piped to a console widget in real time. It handles
+            zero-speed and forward-speed formulations,
+            <span class="text-white/70">irregular frequency removal</span>, mean drift forces
+            (near-field and far-field), catamaran/trimaran rigid-body coupling, and random sea
+            spectral statistics (Pierson-Moskowitz, JONSWAP).
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Results viewer</h4>
           <p>
-            Interactive <span class="text-white/70">Qt Charts</span> for motion RAOs, added mass,
-            damping coefficients, and wave exciting forces. Drag-to-zoom, hover tooltips with exact
-            values, scientific notation on axes. Multi-file comparison with stable per-dataset color
-            identity across 10 high-contrast colors. Added mass displayed in tonnes with full
-            <span class="text-white/70">6×6 matrix</span> or diagonal-only views.
+            Interactive charts for <span class="text-white/70">motion RAOs</span>,
+            <span class="text-white/70">added mass</span>, damping coefficients, and wave
+            exciting forces across all six degrees of freedom. Drag-to-zoom, hover tooltips
+            with exact values, scientific notation on axes. You can load multiple result files
+            and compare them side by side with stable per-dataset color assignment across 10
+            high-contrast colors. Added mass is displayed in tonnes with a full
+            <span class="text-white/70">6×6 coupling matrix</span> view or diagonal-only,
+            depending on whether you care about cross-coupling terms.
           </p>
 
           <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
@@ -169,11 +189,12 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <h3 class="font-display font-600 text-white/85 mb-2">MASS connectivity research</h3>
         <p class="text-xs font-mono text-white/25 mb-3">Technical writing · IMO standards · Transport Canada</p>
         <p class="text-sm text-white/50 leading-relaxed">
-          A research report on communication requirements for Maritime Autonomous Surface Ships
-          (MASS). The report maps connectivity needs across different operational phases and
-          autonomy levels, aligned with current IMO and Transport Canada frameworks. This work
-          directly informed the AEGIS design, particularly around how the vessel handles
-          connectivity failover and what data it needs to stream vs. log locally.
+          A research report I wrote on communication requirements for Maritime Autonomous Surface
+          Ships (MASS). I mapped out what connectivity each IMO autonomy degree actually needs
+          at each operational phase (departure, transit, arrival, emergency), then cross-referenced
+          with Transport Canada's regulatory framework to find the gaps. This is the work that
+          shaped AEGIS's comms architecture, specifically around what the vessel should stream
+          live vs. log locally, and how it should degrade gracefully when satellite links fail.
         </p>
       </div>
 
