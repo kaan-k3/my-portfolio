@@ -10,7 +10,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
   logoAlt="MUN Engineering"
   logoClass="bg-white/10 p-1"
   context="Work"
-  tags={["C++", "OpenGL", "NURBS", "IGES", "Arduino", "Raspberry Pi", "LiDAR", "PID Control", "KiCad", "OpenCV", "MATLAB", "Research"]}
+  tags={["C++17", "Qt 6", "OpenGL", "GLSL", "NURBS", "IGES", "Arduino", "Raspberry Pi", "LiDAR", "PID Control", "KiCad", "OpenCV", "CMake"]}
 >
 
   <section class="mb-12">
@@ -111,23 +111,56 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         />
       </div>
 
-      <!-- Hull visualization tool -->
+      <!-- GUI_MAPS -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-2">Ship hull visualization tool</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">C++ · OpenGL · NURBS · IGES</p>
+        <h3 class="font-display font-600 text-white/85 mb-1">GUI_MAPS — NURBS Surface Viewer & Seakeeping Suite</h3>
+        <p class="text-xs font-mono text-white/25 mb-3">C++17 · Qt 6 · OpenGL ES 2.0 · GLSL · CMake · MSVC 2022</p>
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
-            A C++/OpenGL desktop application that reads IGES hull geometry files and renders
-            the NURBS surfaces, control nets, and surface normals in an interactive 3D viewer.
-            You can rotate, zoom, toggle between wireframe/shaded views, and inspect individual
-            surface patches.
+            A desktop application that provides a graphical front-end for
+            <span class="text-white/70">MAPS0</span>, a frequency-domain hydrodynamic solver
+            for wave-body interaction analysis developed at the OERC. Before this tool existed,
+            MAPS0 was command-line only with manual input file editing. GUI_MAPS wraps the entire
+            pipeline — geometry preprocessing, solver execution, and results post-processing — into
+            one interface built with <span class="text-white/70">C++17</span> and
+            <span class="text-white/70">Qt 6</span> (Widgets, OpenGL, Charts).
           </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Geometry & visualization</h4>
           <p>
-            The tool plugs into Dr. Qiu's frequency-domain hydrodynamic solver, so it also
-            ingests vessel mass-distribution data and displays computed motion RAOs, drift
-            forces, and wave-induced loads alongside the geometry. Basically a preprocessing
-            front-end for the solver that didn't have a visual interface before.
+            Parses <span class="text-white/70">IGES files</span> (Entity 128) and renders
+            <span class="text-white/70">NURBS</span> hull surfaces with GPU-accelerated
+            <span class="text-white/70">OpenGL</span> shading via custom
+            <span class="text-white/70">GLSL shaders</span>. Supports multi-body visualization
+            in a shared global coordinate system — each body gets independent position, heading,
+            and color palette. You can inspect and edit per-patch surface normals with undo, backup,
+            and IGES rewrite. It also loads MAPS0 <span class="text-white/70">.geom</span> output
+            files to overlay computed <span class="text-white/70">Gaussian quadrature points</span>
+            and surface normals directly on the hull mesh.
           </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Analysis workflow</h4>
+          <p>
+            GUI dialogs expose all MAPS0 input parameters: hull dimensions, mass properties, wave
+            conditions, 25+ solver control flags, per-patch Gauss point configuration, and multi-body
+            definitions. The tool assembles the complete <span class="text-white/70">.in project file</span>
+            and launches the solver with real-time console output streaming. Handles zero-speed and
+            forward-speed cases, <span class="text-white/70">irregular frequency removal</span>,
+            drift forces, catamaran/trimaran rigid-body coupling, and random sea statistics.
+          </p>
+
+          <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Results viewer</h4>
+          <p>
+            Interactive <span class="text-white/70">Qt Charts</span> for motion RAOs, added mass,
+            damping coefficients, and wave exciting forces. Drag-to-zoom, hover tooltips with exact
+            values, scientific notation on axes. Multi-file comparison with stable per-dataset color
+            identity across 10 high-contrast colors. Added mass displayed in tonnes with full
+            <span class="text-white/70">6×6 matrix</span> or diagonal-only views.
+          </p>
+
+          <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
+            Screenshots coming soon
+          </div>
         </div>
       </div>
 
