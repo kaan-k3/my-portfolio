@@ -125,41 +125,49 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <p class="text-xs font-mono text-white/25 mb-3">C++ · Qt · OpenGL · GLSL · NURBS · IGES · Hydrodynamics</p>
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
-            <span class="text-white/70">MAPS</span> is a frequency-domain
-            <span class="text-white/70">potential flow solver</span> for wave-body interaction
-            analysis, developed by Drs Wei Qiu and Heather Peng. It had no GUI. You'd hand-edit plaintext .in config
-            files, run the binary from a terminal, then parse output files separately. I built a
-            desktop app in <span class="text-white/70">C++17</span> and
-            <span class="text-white/70">Qt 6</span> that wraps the full pipeline: geometry import
-            and inspection, solver configuration and execution, and post-processing with
-            interactive charts, all in one window.
+            <span class="text-white/70">MAPS</span> (Motion Analysis Program Suite) is a
+            frequency-domain <span class="text-white/70">potential flow solver</span> for
+            wave-body interaction, developed by Drs Wei Qiu and Heather Peng. Its core method is
+            the <span class="text-white/70">panel-free method (PFM)</span>, which skips the flat-panel
+            approximation used in conventional BEM solvers and instead evaluates boundary integrals
+            directly on the exact NURBS geometry via Gaussian quadrature, with the Rankine singularity
+            removed analytically through <span class="text-white/70">desingularization</span>.
+            The solver had no GUI — you'd hand-edit plaintext .in config files, run the binary from a
+            terminal, then parse output files separately. I built a desktop client in
+            <span class="text-white/70">C++</span> and <span class="text-white/70">Qt 6</span>
+            that wraps the full pipeline: geometry import and inspection, solver configuration
+            and execution, and post-processing with interactive charts, all in one window.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Geometry & visualization</h4>
           <p>
             The viewer parses <span class="text-white/70">IGES files</span> (Entity 128) and
-            tessellates <span class="text-white/70">NURBS surfaces</span> on the GPU through
-            custom <span class="text-white/70">GLSL shaders</span> with per-fragment Phong
-            lighting. Each hull body sits in a shared world-space coordinate system with its own
-            position, heading, and color palette, so you can load multi-body configs (catamarans,
-            trimaran floats, barges alongside a vessel) and see them together. Surface normals are
-            editable per-patch with full undo and IGES rewrite, since MAPS is sensitive to normal
-            orientation and a single flipped patch will blow up the solution. The app also overlays
-            MAPS .geom output, plotting the computed
-            <span class="text-white/70">Gaussian quadrature points</span> and evaluated surface
-            normals directly on the mesh so you can verify discretization quality before running
-            a full solve.
+            evaluates <span class="text-white/70">NURBS surfaces</span> using
+            <span class="text-white/70">Cox-de Boor recursion</span> for B-spline basis functions,
+            with adaptive grid density based on control point count. Rendering is two-pass: the
+            first pass tessellates each patch into a triangle mesh, uploads it to VBOs/IBOs, and
+            draws it with a <span class="text-white/70">Phong fragment shader</span> in GLSL.
+            The second pass overlays Gaussian points and normal arrows via QPainter projected
+            through the cached MVP matrix. Each hull body sits in a shared world-space coordinate
+            system with its own position, heading, and color palette, so you can load multi-body
+            configs (catamarans, trimaran floats, barges alongside a vessel) and see them together.
+            Surface normals are editable per-patch with full undo and IGES rewrite, since the
+            solver is sensitive to normal orientation and a single flipped patch will blow up the
+            solution. The app also overlays MAPS .geom output (Gaussian quadrature coordinates,
+            unit normals, and surface Jacobians) directly on the mesh so you can verify
+            discretization quality before running a full solve.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Analysis workflow</h4>
           <p>
             All MAPS input parameters are exposed through form dialogs: principal dimensions,
             mass and inertia matrices, wave heading and frequency ranges, per-patch Gauss point
-            counts, and 25+ solver control flags. The app assembles the complete .in project file
+            counts, and 25+ solver control flags (m-term treatment, forward-speed Green function
+            selection, catamaran mode, etc.). The app assembles the complete .in namelist file
             and launches the solver as a child process with stdout piped to a console widget in
             real time. It handles zero-speed and forward-speed formulations,
-            <span class="text-white/70">irregular frequency removal</span>,
-            <span class="text-white/70">mean drift forces</span> (near-field and far-field),
+            <span class="text-white/70">irregular frequency removal</span> via waterplane lid
+            points, <span class="text-white/70">mean drift forces</span> (near-field and far-field),
             catamaran/trimaran <span class="text-white/70">rigid-body coupling</span>, and random
             sea spectral statistics
             (<span class="text-white/70">Pierson-Moskowitz</span>, <span class="text-white/70">JONSWAP</span>).
@@ -167,12 +175,13 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Results viewer</h4>
           <p>
-            Interactive charts for <span class="text-white/70">motion RAOs</span>, added mass,
-            <span class="text-white/70">damping coefficients</span>, and wave exciting forces
-            across all six degrees of freedom. Drag-to-zoom, hover tooltips with exact values,
-            scientific notation on axes. You can load multiple result files and compare them side
-            by side with stable per-dataset color assignment across 10 high-contrast colors. Added
-            mass is displayed in tonnes with a full
+            Tabbed panels for <span class="text-white/70">motion RAOs</span>, added mass,
+            <span class="text-white/70">damping coefficients</span>, wave exciting forces,
+            diffraction forces, drift forces, and section loads, each with amplitude/phase toggle
+            and split-by-DOF or combined chart views. Drag-to-zoom, hover tooltips with exact
+            values, scientific notation on axes. You can load multiple output files and compare
+            them side by side with stable per-dataset color assignment across 10 high-contrast
+            colors. Added mass is displayed in tonnes with a full
             <span class="text-white/70">6×6 coupling matrix</span> view or diagonal-only,
             depending on whether you care about cross-coupling terms.
           </p>
