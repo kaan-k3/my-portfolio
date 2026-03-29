@@ -122,13 +122,13 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         />
       </div>
 
-      <!-- MAPS0 App -->
+      <!-- MAPS Desktop Client -->
       <div class="glass-card p-6">
-        <h3 class="font-display font-600 text-white/85 mb-1">MAPS0 App — NURBS Surface Viewer & Seakeeping Suite</h3>
+        <h3 class="font-display font-600 text-white/85 mb-1">MAPS Desktop Client — NURBS Surface Viewer & Seakeeping Suite</h3>
         <p class="text-xs font-mono text-white/25 mb-3">C++17 · Qt 6 · OpenGL ES 2.0 · GLSL · CMake · MSVC 2022</p>
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
-            <span class="text-white/70">MAPS0</span> is a frequency-domain potential flow solver
+            <span class="text-white/70">MAPS</span> is a frequency-domain potential flow solver
             for wave-body interaction analysis, developed at the OERC. It had no GUI. You'd hand-edit
             plaintext <span class="text-white/70">.in</span> config files, run the binary from a
             terminal, then parse output files separately. I built a desktop app in
@@ -145,9 +145,9 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             Each hull body sits in a shared world-space coordinate system with its own position,
             heading, and color palette, so you can load multi-body configs (catamarans, trimaran
             floats, barges alongside a vessel) and see them together. Surface normals are editable
-            per-patch with full undo and IGES rewrite, since MAPS0 is sensitive to normal
+            per-patch with full undo and IGES rewrite, since MAPS is sensitive to normal
             orientation and a single flipped patch will blow up the solution. The app also overlays
-            MAPS0 <span class="text-white/70">.geom</span> output, plotting the computed
+            MAPS <span class="text-white/70">.geom</span> output, plotting the computed
             <span class="text-white/70">Gaussian quadrature points</span> and evaluated surface
             normals directly on the mesh so you can verify discretization quality before running
             a full solve.
@@ -155,7 +155,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Analysis workflow</h4>
           <p>
-            All MAPS0 input parameters are exposed through form dialogs: principal dimensions,
+            All MAPS input parameters are exposed through form dialogs: principal dimensions,
             mass and inertia matrices, wave heading and frequency ranges, per-patch Gauss point
             counts, and 25+ solver control flags. The app assembles the complete
             <span class="text-white/70">.in project file</span> and launches the solver
