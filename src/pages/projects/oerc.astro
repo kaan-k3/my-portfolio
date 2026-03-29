@@ -195,17 +195,65 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
       <!-- MASS report -->
       <div id="mass-report" class="glass-card p-6">
         <h3 class="font-display font-600 text-white/85 mb-2">MASS connectivity research</h3>
-        <p class="text-xs font-mono text-white/25 mb-3">Technical writing · IMO standards · Transport Canada</p>
-        <p class="text-sm text-white/50 leading-relaxed">
-          A research report I wrote on communication requirements for
-          <span class="text-white/70">Maritime Autonomous Surface Ships</span> (MASS). I mapped
-          out what connectivity each <span class="text-white/70">IMO autonomy degree</span>
-          actually needs at each operational phase (departure, transit, arrival, emergency), then
-          cross-referenced with <span class="text-white/70">Transport Canada's</span> regulatory
-          framework to find the gaps. This is the work that shaped AEGIS's comms architecture,
-          specifically around what the vessel should stream live vs. log locally, and how it
-          should degrade gracefully when satellite links fail.
-        </p>
+        <p class="text-xs font-mono text-white/25 mb-3">MASS · IMO · GMDSS · S-100 · FMEA · STPA · Maritime PKI · SD-WAN</p>
+        <div class="space-y-3 text-sm text-white/50 leading-relaxed">
+          <p>
+            Research paper produced at JVPLabs / OERC under Dr. Wei Qiu as part of the
+            <span class="text-white/70">CISMaRT</span> research group. The central question:
+            are current connectivity architectures and governance mechanisms actually sufficient
+            for <span class="text-white/70">Maritime Autonomous Surface Ships</span>, or do MASS
+            and <span class="text-white/70">S-100 data ecosystems</span> need oversight models
+            comparable to <span class="text-white/70">GMDSS</span>, Cospas-Sarsat, and LRIT?
+          </p>
+          <p>
+            When a vessel operates with reduced or no crew, the communication link stops being a
+            convenience and becomes a safety-critical dependency. A degraded or compromised link
+            directly affects the ability to monitor vessel state, validate automated decisions, or
+            intervene during emergencies. The same applies to S-100 digital maritime data, where
+            high-resolution navigational, environmental, and safety products have to be delivered,
+            authenticated, and ingested in real time for things like dynamic under-keel clearance.
+          </p>
+          <p>
+            I mapped MASS operational modes and mission threads to phase-specific connectivity
+            requirements across pre-departure, transit, constrained-water maneuvering, degraded
+            conditions, and recovery, using formal risk methods including
+            <span class="text-white/70">FMEA</span>,
+            <span class="text-white/70">STPA</span>, and
+            <span class="text-white/70">Bayesian network</span> hybrid frameworks to characterize
+            mode-transition hazards. I surveyed the full communication technology landscape
+            available to MASS (GEO/LEO satellite constellations, HAPS, coastal LTE/5G,
+            <span class="text-white/70">VDES</span>), link redundancy via
+            <span class="text-white/70">SD-WAN</span> orchestration, and cybersecurity
+            infrastructure including <span class="text-white/70">Maritime Connectivity Platform
+            PKI</span>, SECOM-authenticated data exchange, Galileo OSNMA, and AIS spoofing
+            defenses. I also pulled governance and assurance models from aviation
+            (<span class="text-white/70">ICAO RCP framework</span>, UAS C2 link standards,
+            DO-178C), automotive (ISO 26262 ASIL, UNECE R155/R156/R157), and public safety
+            communications to see what translates.
+          </p>
+          <p>
+            From that I built a proposed <span class="text-white/70">tiered RCP-Maritime
+            framework</span> that matches governance intensity to service criticality, from
+            real-time safety-of-life control links requiring GMDSS-style centralized oversight
+            down to background transfers governed through lighter federated models. The gap
+            synthesis identified ten specific governance, technical, and assurance shortfalls
+            where current mechanisms fall short, each tagged with downstream implications for
+            risk analysis and regulatory adoption.
+          </p>
+          <p>
+            The main findings: there is no mandatory connectivity performance standard for MASS,
+            no independent oversight for commercial connectivity providers serving autonomous
+            vessels, maritime PKI adoption is entirely voluntary, and there is no standardized
+            mechanism for MASS to publish fallback behavior profiles to traffic management
+            authorities. IMO proceedings at <span class="text-white/70">MSC 110</span> confirmed
+            that connectivity governance will be deferred beyond the non-mandatory MASS Code
+            expected for adoption in May 2026, which validated the paper's argument that this is
+            one of the most significant unresolved problems in the regulation of maritime autonomy.
+            This work directly shaped AEGIS's comms architecture, specifically around what the
+            vessel should stream live vs. log locally, and how it degrades when satellite links
+            fail.
+          </p>
+        </div>
       </div>
 
     </div>
