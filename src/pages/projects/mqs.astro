@@ -125,10 +125,8 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <PhotoGallery
           client:only="react"
           images={[
-            { src: "/projects/mqs/backtest-chart.png", alt: "Backtest performance chart", caption: "Portfolio value vs buy-and-hold benchmark with drawdown overlay" },
-            { src: "/projects/mqs/portfolio-results.png", alt: "Portfolio results graph", caption: "Portfolio performance results over the backtest period" },
-            { src: "/projects/mqs/backtest-metrics.png", alt: "Backtest metrics table", caption: "63% cumulative return, 64.68% annualized, $630K net profit on $1M initial" },
-            { src: "/projects/mqs/portfolio-results-table.png", alt: "Portfolio results table", caption: "Detailed portfolio results breakdown with key performance metrics" },
+            { src: "/projects/mqs/portfolio-results.png", alt: "Portfolio performance vs benchmark", caption: "Strategy value vs buy-and-hold benchmark with drawdown overlay" },
+            { src: "/projects/mqs/portfolio-results-table.png", alt: "Portfolio results table", caption: "63% cumulative return, 64.68% annualized, $630K net profit on $1M initial" },
           ]}
         />
       </div>
@@ -215,10 +213,9 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           client:only="react"
           images={[
             { src: "/projects/mqs/mqsgraph.png", alt: "Sentiment vs alpha correlation graph", caption: "Correlation between sentiment scores from 6,000+ articles and alpha spread for AAPL (2025)" },
-            { src: "/projects/mqs/alpha-correlation.png", alt: "Alpha vs sentiment rolling correlation", caption: "AAPL 7-day alpha MA, sentiment MA, and 30-day rolling correlation" },
             { src: "/projects/mqs/nlp-daemon.png", alt: "NLP scraper daemon", caption: "Batched NLP scraper daemon processing tickers in staggered groups" },
             { src: "/projects/mqs/sentiment-scores.png", alt: "News sentiment aggregation", caption: "Daily sentiment scores aggregated by ticker with article counts" },
-            { src: "/projects/mqs/sentiment-table.png", alt: "TSLA sentiment scores", caption: "TSLA daily average sentiment scores from scraped news articles" },
+            { src: "/projects/mqs/sentiment-table.png", alt: "Daily sentiment scores by ticker", caption: "Daily average sentiment scores grouped by ticker from scraped news articles" },
           ]}
         />
       </div>
