@@ -66,12 +66,10 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             portfolio threads without connection exhaustion.
           </li>
         </ul>
-        <PhotoGallery
-          client:only="react"
-          images={[
-            { src: "/projects/mqs/trade-logs.png", alt: "Trade execution logs", caption: "PostgreSQL trade_execution_logs table with arrival price and slippage tracking" },
-          ]}
-        />
+        <figure class="mt-4">
+          <img src="/projects/mqs/trade-logs.png" alt="Trade execution logs" class="rounded-lg w-full" loading="lazy" />
+          <figcaption class="text-xs text-white/35 mt-2">PostgreSQL trade_execution_logs table with arrival price and slippage tracking</figcaption>
+        </figure>
       </div>
 
       <!-- Backtesting -->
@@ -316,12 +314,10 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             cancelled).
           </li>
         </ul>
-        <PhotoGallery
-          client:only="react"
-          images={[
-            { src: "/projects/mqs/oms-diagram.png", alt: "Order Management System diagram", caption: "OMS two-layer architecture: validation then execution queue" },
-          ]}
-        />
+        <figure class="mt-4">
+          <img src="/projects/mqs/oms-diagram.png" alt="Order Management System diagram" class="rounded-lg w-full" loading="lazy" />
+          <figcaption class="text-xs text-white/35 mt-2">OMS two-layer architecture: validation then execution queue</figcaption>
+        </figure>
       </div>
 
       <!-- CI/CD -->
