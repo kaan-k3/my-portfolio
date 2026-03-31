@@ -29,28 +29,6 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
     <a href="https://github.com/MUNQuantSociety/MQSMaster" target="_blank" class="detail-link mt-3 inline-block">View on GitHub →</a>
   </section>
 
-  <!-- Screenshots -->
-  <section class="mb-12">
-    <h2 class="font-display text-lg font-600 text-white/80 mb-6">Screenshots</h2>
-    <div class="glass-card p-6 mb-4">
-      <PhotoGallery
-        client:only="react"
-        images={[
-          { src: "/projects/mqs/alpha-correlation.png", alt: "Alpha vs sentiment rolling correlation", caption: "AAPL 7-day alpha MA, sentiment MA, and 30-day rolling correlation" },
-          { src: "/projects/mqs/backtest-chart.png", alt: "Backtest performance chart", caption: "Portfolio value vs buy-and-hold benchmark with drawdown overlay" },
-          { src: "/projects/mqs/backtest-metrics.png", alt: "Backtest metrics table", caption: "63% cumulative return, 64.68% annualized, $630K net profit on $1M initial" },
-          { src: "/projects/mqs/oms-diagram.png", alt: "Order Management System diagram", caption: "OMS two-layer architecture: validation then execution queue" },
-          { src: "/projects/mqs/trade-logs.png", alt: "Trade execution logs", caption: "PostgreSQL trade_execution_logs table with arrival price and slippage tracking" },
-          { src: "/projects/mqs/pnl-book.png", alt: "PnL book table", caption: "PnL book with realized/unrealized PnL, notional values, and FX rates" },
-          { src: "/projects/mqs/market-data.png", alt: "Market data table", caption: "Minute-level OHLCV market data for AAPL from NYSE" },
-          { src: "/projects/mqs/sentiment-scores.png", alt: "News sentiment aggregation", caption: "Daily sentiment scores aggregated by ticker with article counts" },
-          { src: "/projects/mqs/sentiment-table.png", alt: "TSLA sentiment scores", caption: "TSLA daily average sentiment scores from scraped news articles" },
-          { src: "/projects/mqs/nlp-daemon.png", alt: "NLP scraper daemon", caption: "Batched NLP scraper daemon processing tickers in staggered groups" },
-        ]}
-      />
-    </div>
-  </section>
-
   <!-- Live Trading Engine -->
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
@@ -83,11 +61,17 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             failures, isolating problems so one broken strategy cannot cascade into others.
           </li>
           <li>
-            Designed a <strong class="text-white/70">thread-safe connection pool</strong> 
-            (minconn=1, maxconn=6) to manage concurrent database access efficiently across all 
+            Designed a <strong class="text-white/70">thread-safe connection pool</strong>
+            (minconn=1, maxconn=6) to manage concurrent database access efficiently across all
             portfolio threads without connection exhaustion.
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/mqs/trade-logs.png", alt: "Trade execution logs", caption: "PostgreSQL trade_execution_logs table with arrival price and slippage tracking" },
+          ]}
+        />
       </div>
 
       <!-- Backtesting -->
@@ -119,12 +103,19 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             mirroring live trading constraints so backtests produce realistic results.
           </li>
           <li>
-            Automated <strong class="text-white/70">12 report types per backtest run</strong>: 
-            trade logs, performance timeseries, Sharpe ratio, max drawdown, rolling statistics 
-            (30/90/180-day windows), monthly return breakdowns, benchmark comparisons against 
+            Automated <strong class="text-white/70">12 report types per backtest run</strong>:
+            trade logs, performance timeseries, Sharpe ratio, max drawdown, rolling statistics
+            (30/90/180-day windows), monthly return breakdowns, benchmark comparisons against
             buy-and-hold, and portfolio risk analytics including correlation matrices.
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/mqs/backtest-chart.png", alt: "Backtest performance chart", caption: "Portfolio value vs buy-and-hold benchmark with drawdown overlay" },
+            { src: "/projects/mqs/backtest-metrics.png", alt: "Backtest metrics table", caption: "63% cumulative return, 64.68% annualized, $630K net profit on $1M initial" },
+          ]}
+        />
       </div>
 
       <!-- Strategy API -->
@@ -198,13 +189,22 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             with early stopping based on validation loss.
           </li>
           <li>
-            Designed the sentiment scoring to output a value from 
-            <strong class="text-white/70">-1.0 (bearish) to +1.0 (bullish)</strong> per article, 
-            computed as the difference between positive and negative class probabilities from the 
-            model's softmax output. Daily averages are precomputed and stored in a PostgreSQL 
+            Designed the sentiment scoring to output a value from
+            <strong class="text-white/70">-1.0 (bearish) to +1.0 (bullish)</strong> per article,
+            computed as the difference between positive and negative class probabilities from the
+            model's softmax output. Daily averages are precomputed and stored in a PostgreSQL
             news_sentiment table for real-time access by any strategy.
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/mqs/nlp-daemon.png", alt: "NLP scraper daemon", caption: "Batched NLP scraper daemon processing tickers in staggered groups" },
+            { src: "/projects/mqs/sentiment-scores.png", alt: "News sentiment aggregation", caption: "Daily sentiment scores aggregated by ticker with article counts" },
+            { src: "/projects/mqs/sentiment-table.png", alt: "TSLA sentiment scores", caption: "TSLA daily average sentiment scores from scraped news articles" },
+            { src: "/projects/mqs/alpha-correlation.png", alt: "Alpha vs sentiment rolling correlation", caption: "AAPL 7-day alpha MA, sentiment MA, and 30-day rolling correlation" },
+          ]}
+        />
       </div>
 
       <!-- Data Pipeline -->
@@ -235,12 +235,19 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             and bulk-inserts into PostgreSQL with conflict handling to prevent duplicate records.
           </li>
           <li>
-            Defined a <strong class="text-white/70">5-table database schema</strong>: 
-            market_data (OHLCV), cash_equity_book (portfolio balances), positions_book (holdings), 
-            trade_execution_logs (fill records with slippage tracking), and pnl_book (portfolio 
+            Defined a <strong class="text-white/70">5-table database schema</strong>:
+            market_data (OHLCV), cash_equity_book (portfolio balances), positions_book (holdings),
+            trade_execution_logs (fill records with slippage tracking), and pnl_book (portfolio
             valuation history). All portfolio state reads use CTE-based atomic queries for consistency.
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/mqs/market-data.png", alt: "Market data table", caption: "Minute-level OHLCV market data for AAPL from NYSE" },
+            { src: "/projects/mqs/pnl-book.png", alt: "PnL book table", caption: "PnL book with realized/unrealized PnL, notional values, and FX rates" },
+          ]}
+        />
       </div>
 
       <!-- Risk Management -->
@@ -300,12 +307,18 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             is broken into smaller child orders dispatched over time.
           </li>
           <li>
-            Specifying <strong class="text-white/70">VWAP and TWAP execution algorithms</strong> 
-            that schedule child orders based on volume profiles and time intervals, along with 
-            an OrderTracker for full lifecycle visibility (pending, partially filled, complete, 
+            Specifying <strong class="text-white/70">VWAP and TWAP execution algorithms</strong>
+            that schedule child orders based on volume profiles and time intervals, along with
+            an OrderTracker for full lifecycle visibility (pending, partially filled, complete,
             cancelled).
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/mqs/oms-diagram.png", alt: "Order Management System diagram", caption: "OMS two-layer architecture: validation then execution queue" },
+          ]}
+        />
       </div>
 
       <!-- CI/CD -->
