@@ -107,6 +107,11 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             buy-and-hold, and portfolio risk analytics including correlation matrices.
           </li>
         </ul>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Below is a sample run from one of our validation backtests. The equity curve tracks portfolio
+          value against a buy-and-hold benchmark with drawdown shading, and the results table breaks
+          down cumulative return, annualized return, net profit, and ROI from a $1M initial allocation.
+        </p>
         <PhotoGallery
           client:only="react"
           images={[
@@ -242,6 +247,11 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             valuation history). All portfolio state reads use CTE-based atomic queries for consistency.
           </li>
         </ul>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Here are two of the core tables in action: the market_data table storing minute-level
+          OHLCV bars as they come in from FMP, and the pnl_book tracking each portfolio's
+          realized and unrealized PnL, notional exposure, and currency rates over time.
+        </p>
         <PhotoGallery
           client:only="react"
           images={[
