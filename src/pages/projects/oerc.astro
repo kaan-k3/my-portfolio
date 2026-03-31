@@ -186,9 +186,18 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             depending on whether you care about cross-coupling terms.
           </p>
 
-          <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-            Screenshots coming soon
-          </div>
+          <PhotoGallery
+            client:only="react"
+            images={[
+              { src: "/projects/oerc/maps/multi-body.png", alt: "Multi-body hull visualization", caption: "Two Flokstra hulls loaded in shared global coordinate system with per-body color palettes" },
+              { src: "/projects/oerc/maps/single-body.png", alt: "Single-body surface rendering", caption: "Single hull NURBS surface rendering with per-patch color coding and Gauss point info" },
+              { src: "/projects/oerc/maps/flip-normals.png", alt: "Normal editing with flip dialog", caption: "Surface normal arrows with per-patch flip dialog for geometry correction" },
+              { src: "/projects/oerc/maps/principal-data.png", alt: "Principal Data dialog", caption: "Hull dimensions, center of gravity, radii of gyration, and roll damping input" },
+              { src: "/projects/oerc/maps/run-config.png", alt: "Run Configuration dialog", caption: "Solver settings: body motion, m-terms, irregular frequency removal, drift forces, and more" },
+              { src: "/projects/oerc/maps/motion-rao.png", alt: "Motion RAO results", caption: "Surge amplitude RAOs comparing two datasets at 22 kn head seas, split-by-DOF view" },
+              { src: "/projects/oerc/maps/added-mass.png", alt: "Added mass results", caption: "Added mass A(1,1) and A(2,2) diagonal terms with multi-file comparison" },
+            ]}
+          />
         </div>
       </div>
 

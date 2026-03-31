@@ -1,5 +1,6 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import PhotoGallery from "../../components/PhotoGallery.jsx";
 ---
 
 <ProjectLayout
@@ -28,13 +29,25 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
     <a href="https://github.com/MUNQuantSociety/MQSMaster" target="_blank" class="detail-link mt-3 inline-block">View on GitHub →</a>
   </section>
 
-  <!-- System Architecture Diagram -->
+  <!-- Screenshots -->
   <section class="mb-12">
-    <h2 class="font-display text-lg font-600 text-white/80 mb-6">System Architecture</h2>
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">Screenshots</h2>
     <div class="glass-card p-6 mb-4">
-      <div class="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/25 font-mono">
-        Add architecture diagram: /public/projects/mqs/architecture.png
-      </div>
+      <PhotoGallery
+        client:only="react"
+        images={[
+          { src: "/projects/mqs/alpha-correlation.png", alt: "Alpha vs sentiment rolling correlation", caption: "AAPL 7-day alpha MA, sentiment MA, and 30-day rolling correlation" },
+          { src: "/projects/mqs/backtest-chart.png", alt: "Backtest performance chart", caption: "Portfolio value vs buy-and-hold benchmark with drawdown overlay" },
+          { src: "/projects/mqs/backtest-metrics.png", alt: "Backtest metrics table", caption: "63% cumulative return, 64.68% annualized, $630K net profit on $1M initial" },
+          { src: "/projects/mqs/oms-diagram.png", alt: "Order Management System diagram", caption: "OMS two-layer architecture: validation then execution queue" },
+          { src: "/projects/mqs/trade-logs.png", alt: "Trade execution logs", caption: "PostgreSQL trade_execution_logs table with arrival price and slippage tracking" },
+          { src: "/projects/mqs/pnl-book.png", alt: "PnL book table", caption: "PnL book with realized/unrealized PnL, notional values, and FX rates" },
+          { src: "/projects/mqs/market-data.png", alt: "Market data table", caption: "Minute-level OHLCV market data for AAPL from NYSE" },
+          { src: "/projects/mqs/sentiment-scores.png", alt: "News sentiment aggregation", caption: "Daily sentiment scores aggregated by ticker with article counts" },
+          { src: "/projects/mqs/sentiment-table.png", alt: "TSLA sentiment scores", caption: "TSLA daily average sentiment scores from scraped news articles" },
+          { src: "/projects/mqs/nlp-daemon.png", alt: "NLP scraper daemon", caption: "Batched NLP scraper daemon processing tickers in staggered groups" },
+        ]}
+      />
     </div>
   </section>
 
@@ -192,9 +205,6 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
             news_sentiment table for real-time access by any strategy.
           </li>
         </ul>
-        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono mt-4">
-          Add screenshots: sentiment dashboard, training curves, example scores
-        </div>
       </div>
 
       <!-- Data Pipeline -->
@@ -231,9 +241,6 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
             valuation history). All portfolio state reads use CTE-based atomic queries for consistency.
           </li>
         </ul>
-        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono mt-4">
-          Add screenshots: database schema diagram, PgAdmin tables
-        </div>
       </div>
 
       <!-- Risk Management -->
