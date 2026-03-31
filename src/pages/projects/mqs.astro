@@ -66,6 +66,16 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             portfolio threads without connection exhaustion.
           </li>
         </ul>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Every fill the engine makes gets written to the <strong class="text-white/70">trade_execution_logs</strong>
+          table in real time. Each row records the ticker, side (BUY/SELL), quantity, the
+          <strong class="text-white/70">arrival price</strong> at the moment the signal fired,
+          the actual <strong class="text-white/70">exec_price</strong> the order filled at, and
+          the <strong class="text-white/70">slippage in basis points</strong> between the two.
+          This is how we measure execution quality after the fact and tune our slippage models
+          for backtesting. You can see the initial USD_CASH seed entries at the top, followed
+          by real equity fills for AAPL, TSLA, and MSFT once the strategies started trading.
+        </p>
         <figure class="mt-4">
           <img src="/projects/mqs/trade-logs.png" alt="Trade execution logs" class="rounded-lg w-full" loading="lazy" />
           <figcaption class="text-xs text-white/35 mt-2">PostgreSQL trade_execution_logs table with arrival price and slippage tracking</figcaption>
