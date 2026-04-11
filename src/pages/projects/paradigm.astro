@@ -1,6 +1,7 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import PCBViewer from "../../components/PCBViewer.jsx";
+import PhotoGallery from "../../components/PhotoGallery.jsx";
 ---
 
 <ProjectLayout
@@ -145,9 +146,18 @@ import PCBViewer from "../../components/PCBViewer.jsx";
             real-time control loop requirements.
           </li>
         </ul>
-        <div class="rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-white/25 font-mono">
-          Add photos or code snippets here
-        </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          Here we're running the brake actuator through a serial terminal — you type in a target
+          angle and the STM32 drives the motor to that position via PWM. The UP/DOWN commands
+          map to brake ON and brake OFF states, and you can see the actuator physically rotate
+          to match the commanded angle in real time.
+        </p>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { video: "/projects/paradigm/motor-brake-demo.mp4", alt: "Motor brake angle test", caption: "Terminal-driven brake actuator test — commanding specific angles with real-time motor response" },
+          ]}
+        />
       </div>
 
       <!-- Board Bring-Up -->
@@ -176,11 +186,23 @@ import PCBViewer from "../../components/PCBViewer.jsx";
             board revision.
           </li>
           <li>
-            Documented all <strong class="text-white/70">bring-up procedures</strong> and failure 
-            modes encountered so that future board revisions could be validated faster by other 
+            Hand-soldered <strong class="text-white/70">surface mount components</strong> onto
+            the control board and verified every connection with a multimeter before powering on,
+            checking for shorts across pads and confirming continuity on all signal traces back
+            to the MCU.
+          </li>
+          <li>
+            Documented all <strong class="text-white/70">bring-up procedures</strong> and failure
+            modes encountered so that future board revisions could be validated faster by other
             team members.
           </li>
         </ul>
+        <PhotoGallery
+          client:only="react"
+          images={[
+            { src: "/projects/paradigm/soldering-control-board.jpg", alt: "Soldering surface mount components", caption: "Hand-soldering surface mount components onto the AUX Control board during bring-up" },
+          ]}
+        />
       </div>
     </div>
   </section>
