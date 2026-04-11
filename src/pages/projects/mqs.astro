@@ -16,14 +16,14 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
   <section class="mb-12">
     <h2 class="font-display text-lg font-600 text-white/80 mb-4">Overview</h2>
     <p class="text-white/55 leading-relaxed max-w-2xl mb-4">
-      I lead a team of <strong class="text-white/75">11 contributors</strong> as Director of Data & Infrastructure 
+      I lead a team of 11 contributors as Director of Data & Infrastructure 
       for the MUN Quant Society. In this role I am responsible for the design, development, and deployment 
       of the society's full-stack quantitative trading platform. The system handles everything from 
       live market data ingestion and strategy execution to sentiment analysis and risk management, 
-      all running on <strong class="text-white/75">PostgreSQL</strong> and deployed through <strong class="text-white/75">GCP</strong>.
+      all running on <strong class="text-white/70">PostgreSQL</strong> and deployed through <strong class="text-white/70">GCP</strong>.
     </p>
     <p class="text-white/55 leading-relaxed max-w-2xl">
-      Below is a breakdown of each major system I built or directed the development of, 
+      Below is a breakdown of each major system we built or I directed the development of, 
       along with the technical decisions, outcomes, and tools involved.
     </p>
     <a href="https://github.com/MUNQuantSociety/MQSMaster" target="_blank" class="detail-link mt-3 inline-block">View on GitHub →</a>
@@ -31,7 +31,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
 
   <!-- Live Trading Engine -->
   <section class="mb-12">
-    <h2 class="font-display text-lg font-600 text-white/80 mb-6">What I Built</h2>
+    <h2 class="font-display text-lg font-600 text-white/80 mb-6">What We Built</h2>
     <div class="space-y-8">
 
       <div class="glass-card p-6">
@@ -44,24 +44,24 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Architected a <strong class="text-white/70">concurrent multi-portfolio trading engine</strong> 
+          Architected a concurrent multi-portfolio trading engine 
           to allow the society to run multiple strategies at once without them interfering with each 
           other. Each portfolio runs in its own thread with a configurable polling interval, pulling 
           the latest market data and portfolio state before generating trade signals.
         </p>
         <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
           <li>
-            Built <strong class="text-white/70">atomic state queries</strong> using PostgreSQL CTEs 
+            Built atomic state queries using <strong class="text-white/70">PostgreSQL CTEs</strong> 
             so that every strategy sees a consistent snapshot of its cash and positions at the time 
             of each decision, preventing race conditions across concurrent threads.
           </li>
           <li>
-            Implemented a <strong class="text-white/70">circuit breaker pattern</strong> that tracks 
+            Implemented a circuit breaker pattern that tracks 
             consecutive failures per portfolio and automatically halts any strategy thread after 5 
             failures, isolating problems so one broken strategy cannot cascade into others.
           </li>
           <li>
-            Designed a <strong class="text-white/70">thread-safe connection pool</strong>
+            Designed a thread-safe connection pool
             (minconn=1, maxconn=6) to manage concurrent database access efficiently across all
             portfolio threads without connection exhaustion.
           </li>
@@ -69,9 +69,9 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <p class="text-sm text-white/50 leading-relaxed mb-4">
           Every fill the engine makes gets written to the <strong class="text-white/70">trade_execution_logs</strong>
           table in real time. Each row records the ticker, side (BUY/SELL), quantity, the
-          <strong class="text-white/70">arrival price</strong> at the moment the signal fired,
+          arrival price at the moment the signal fired,
           the actual <strong class="text-white/70">exec_price</strong> the order filled at, and
-          the <strong class="text-white/70">slippage in basis points</strong> between the two.
+          the slippage in basis points between the two.
           This is how we measure execution quality after the fact and tune our slippage models
           for backtesting. You can see the initial USD_CASH seed entries at the top, followed
           by real equity fills for AAPL, TSLA, and MSFT once the strategies started trading.
@@ -93,7 +93,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Developed a <strong class="text-white/70">backtesting engine</strong> that allows the 
+          Developed a backtesting engine that allows the 
           team to validate any trading strategy against historical data before deploying it live. 
           Supports both an event-driven mode (simulates real market conditions bar-by-bar) and a 
           faster vectorized mode for rapid iteration.
@@ -111,7 +111,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             mirroring live trading constraints so backtests produce realistic results.
           </li>
           <li>
-            Automated <strong class="text-white/70">12 report types per backtest run</strong>:
+            Automated 12 report types per backtest run:
             trade logs, performance timeseries, Sharpe ratio, max drawdown, rolling statistics
             (30/90/180-day windows), monthly return breakdowns, benchmark comparisons against
             buy-and-hold, and portfolio risk analytics including correlation matrices.
@@ -141,26 +141,26 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Designed a <strong class="text-white/70">plug-and-play strategy framework</strong> that 
+          Designed a plug-and-play strategy framework that 
           lets any team member write a new trading strategy in under 50 lines of code, without 
           needing to understand the underlying database, execution, or data infrastructure.
         </p>
         <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
           <li>
-            Built an <strong class="text-white/70">abstract BasePortfolio class</strong> that 
-            provides a clean StrategyContext API with access to market data (OHLCV, historical 
+            Built an abstract <strong class="text-white/70">BasePortfolio</strong> class that 
+            provides a clean <strong class="text-white/70">StrategyContext</strong> API with access to market data (OHLCV, historical 
             lookback), portfolio state (cash, positions, weights), and simple buy/sell methods 
             with confidence-weighted position sizing.
           </li>
           <li>
-            Developed a <strong class="text-white/70">dynamic indicator factory</strong> using 
-            Python's importlib, so indicators are registered by name and automatically loaded at 
-            runtime. Created <strong class="text-white/70">7 built-in indicators</strong>: SMA, 
+            Developed a dynamic indicator factory using 
+            Python's <strong class="text-white/70">importlib</strong>, so indicators are registered by name and automatically loaded at 
+            runtime. Created 7 built-in indicators: SMA, 
             RSI, Relative Momentum Index, ATR, Displaced Moving Average, Rate of Change, and VWAP, 
             each with automatic warmup from historical data.
           </li>
           <li>
-            Enabled the team to deploy <strong class="text-white/70">4 live strategies</strong>: 
+            Enabled the team to deploy 4 live strategies: 
             VolMomentum, MomentumStrategy, RegimeAdaptiveStrategy, and TrendRotateStrategy, all 
             running concurrently through the live engine.
           </li>
@@ -178,34 +178,34 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Built and deployed a <strong class="text-white/70">real-time news sentiment pipeline</strong> 
+          Built and deployed a real-time news sentiment pipeline 
           that scrapes financial articles, scores them using a fine-tuned transformer model, and 
           feeds the results directly into the trading strategies for signal enrichment.
         </p>
         <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
           <li>
-            Developed a <strong class="text-white/70">multi-source news scraper</strong> that pulls 
+            Developed a multi-source news scraper that pulls 
             articles from FMP, Yahoo Finance, Finviz, and Alpha Vantage. Articles are deduplicated, 
-            merged into per-ticker CSVs, and processed in <strong class="text-white/70">batched 
-            ticker groups every 5 minutes</strong> via a daemon process, with staggered 2-minute 
+            merged into per-ticker CSVs, and processed in batched
+            ticker groups every 5 minutes via a daemon process, with staggered 2-minute 
             intervals between batches to respect API rate limits.
           </li>
           <li>
             Fine-tuned the <strong class="text-white/70">FinBERT model</strong> (yiyanghkust/finbert-tone) 
             on a combined dataset of Financial PhraseBank and FiQA sentiment data to improve accuracy 
-            on real financial news. Trained using Hugging Face Trainer with 
+            on real financial news. Trained using <strong class="text-white/70">Hugging Face Trainer</strong> with 
             <strong class="text-white/70">AdamW optimizer</strong>, a learning rate of 
-            <strong class="text-white/70">2e-5</strong>, linear learning rate scheduler with 
-            <strong class="text-white/70">500 warmup steps</strong>, batch size of 18, 
-            <strong class="text-white/70">5 epochs</strong>, and weight decay of 0.01. 
+            2e-5, linear learning rate scheduler with 
+            500 warmup steps, batch size of 18, 
+            5 epochs, and weight decay of 0.01. 
             Evaluated using weighted F1, precision, recall, and accuracy metrics per epoch, 
             with early stopping based on validation loss.
           </li>
           <li>
             Designed the sentiment scoring to output a value from
-            <strong class="text-white/70">-1.0 (bearish) to +1.0 (bullish)</strong> per article,
+            -1.0 (bearish) to +1.0 (bullish) per article,
             computed as the difference between positive and negative class probabilities from the
-            model's softmax output. Daily averages are precomputed and stored in a PostgreSQL
+            model's softmax output. Daily averages are precomputed and stored in a <strong class="text-white/70">PostgreSQL</strong>
             news_sentiment table for real-time access by any strategy.
           </li>
         </ul>
@@ -231,26 +231,26 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Designed and built the <strong class="text-white/70">data infrastructure</strong> that 
+          Designed and built the data infrastructure that 
           every other system in the platform depends on, from market data ingestion to trade 
           record-keeping.
         </p>
         <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
           <li>
-            Built the <strong class="text-white/70">FMPMarketData client</strong> with a 
+            Built the <strong class="text-white/70">FMPMarketData</strong> client with a 
             thread-safe sliding-window rate limiter (3,000 requests/minute), automatic retry 
             logic (6 attempts with backoff), timeout handling (10s), and internet connectivity 
             checks to ensure reliable data ingestion across all threads.
           </li>
           <li>
-            Developed a <strong class="text-white/70">backfill service</strong> that generates 
+            Developed a backfill service that generates 
             business day ranges, batches API calls (3 days per request), caches results to CSV, 
-            and bulk-inserts into PostgreSQL with conflict handling to prevent duplicate records.
+            and bulk-inserts into <strong class="text-white/70">PostgreSQL</strong> with conflict handling to prevent duplicate records.
           </li>
           <li>
-            Defined a <strong class="text-white/70">5-table database schema</strong>:
+            Defined a 5-table database schema:
             market_data (OHLCV), cash_equity_book (portfolio balances), positions_book (holdings),
-            trade_execution_logs (fill records with slippage tracking), and pnl_book (portfolio
+            <strong class="text-white/70">trade_execution_logs</strong> (fill records with slippage tracking), and pnl_book (portfolio
             valuation history). All portfolio state reads use CTE-based atomic queries for consistency.
           </li>
         </ul>
@@ -278,7 +278,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Built the <strong class="text-white/70">capital management layer</strong> that controls 
+          Built the capital management layer that controls 
           how money flows between the master account and individual strategy portfolios, ensuring 
           each strategy gets its target allocation and no single strategy can over-concentrate risk.
         </p>
@@ -291,13 +291,12 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             transfers as paired database entries.
           </li>
           <li>
-            Created a <strong class="text-white/70">CLI-based capital management tool</strong> for 
+            Created a CLI-based capital management tool for 
             adding and withdrawing funds from the master portfolio, with balance validation and 
-            full audit logging through the trade_execution_logs table.
+            full audit logging through the <strong class="text-white/70">trade_execution_logs</strong> table.
           </li>
           <li>
-            Designed all capital transfers as <strong class="text-white/70">atomic database 
-            transactions</strong>, ensuring that if any step fails mid-transfer, no partial 
+            Designed all capital transfers as atomic database transactions, ensuring that if any step fails mid-transfer, no partial 
             state is left behind.
           </li>
         </ul>
@@ -313,19 +312,19 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed mb-4">
-          Currently designing an <strong class="text-white/70">Order Management System</strong> to 
+          Currently designing an Order Management System to 
           replace the platform's fire-and-forget execution model with a proper order lifecycle. 
           The goal is to reduce market impact on large orders by slicing them over time using 
           execution algorithms.
         </p>
         <ul class="space-y-2 text-sm text-white/50 leading-relaxed mb-4">
           <li>
-            Designed a <strong class="text-white/70">parent/child order architecture</strong> where 
+            Designed a parent/child order architecture where 
             a strategy's intent (e.g. "buy AAPL with 80% confidence") becomes a parent order that 
             is broken into smaller child orders dispatched over time.
           </li>
           <li>
-            Specifying <strong class="text-white/70">VWAP and TWAP execution algorithms</strong>
+            Specifying <strong class="text-white/70">VWAP and TWAP</strong> execution algorithms
             that schedule child orders based on volume profiles and time intervals, along with
             an OrderTracker for full lifecycle visibility (pending, partially filled, complete,
             cancelled).
@@ -347,12 +346,12 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           </div>
         </div>
         <p class="text-sm text-white/50 leading-relaxed">
-          Set up <strong class="text-white/70">GitHub Actions CI/CD pipelines</strong> for 
+          Set up <strong class="text-white/70">GitHub Actions</strong> CI/CD pipelines for 
           automated testing on every push. Wrote and maintained a 
-          <strong class="text-white/70">pytest test suite</strong> covering the backtest engine, 
+          <strong class="text-white/70">pytest</strong> test suite covering the backtest engine, 
           strategy API endpoints, trade execution, vectorized backtesting, and indicator 
           correctness. Configured test fixtures with database mocking so tests run without 
-          needing a live PostgreSQL connection.
+          needing a live <strong class="text-white/70">PostgreSQL</strong> connection.
         </p>
       </div>
     </div>
