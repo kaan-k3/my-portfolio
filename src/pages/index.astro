@@ -113,16 +113,16 @@ import ProjectCard from "../components/ProjectCard.jsx";
             <div class="flex items-start gap-3">
               <img src="/logos/mun-engineering.png" alt="MUN" class="w-9 h-9 rounded-md mt-0.5 object-contain bg-white/10 p-1" />
               <div>
-                <h3 class="font-display font-600 text-base text-white/90">MASS Research Student</h3>
+                <h3 class="font-display font-600 text-base text-white/90">ONAE Research Student</h3>
                 <p class="text-sm text-white/40 mt-0.5">Ocean Engineering Research Center · Supervised by Dr. Wei Qiu</p>
               </div>
             </div>
             <span class="text-xs font-mono text-white/25 whitespace-nowrap shrink-0">Jan – May 2026</span>
           </div>
           <ul class="space-y-2 text-sm text-white/50 leading-relaxed">
-            <li>Developed a <span class="text-white/70">C++/OpenGL</span> desktop application for ship hull visualization and hydrodynamic preprocessing, parsing IGES files to render NURBS surfaces, control nets, and surface normals in an interactive 3D viewer.</li>
-            <li>Authored a large-scale research report on <span class="text-white/70">Maritime Autonomous Surface Ship</span> connectivity requirements for IMO and Transport Canada aligned frameworks.</li>
-            <li>Designed and built an autonomous model vessel using Arduino and LiDAR with embedded C++ <span class="text-white/70">PID-based control</span> for wall tracking and obstacle avoidance.</li>
+            <li>Developed a <span class="text-white/70">C++/OpenGL</span>-based seakeeping CAE application for ship hull preprocessing and hydrodynamic visualization, integrated with a frequency-domain potential-flow solver for use in naval architecture research and design workflows.</li>
+            <li>Built AEGIS, a proof-of-concept autonomous SAR vessel capable of georeferenced thermal heat mapping and obstacle-aware navigation, using a <span class="text-white/70">Raspberry Pi/Arduino</span> architecture with GPS/IMU sensor fusion, <span class="text-white/70">LiDAR</span>, and thermal imaging.</li>
+            <li>Produced the framework for Canada's first autonomous vessel program at MUN, applying <span class="text-white/70">FMEA/STPA</span> risk profiling, cybersecurity analysis, and connectivity benchmarking across various architectures to enable the 2026-2028 ship design and IMO adoption phase.</li>
           </ul>
           <div class="flex flex-wrap gap-1.5 mt-4">
             <span class="tech-tag">C++</span><span class="tech-tag">OpenGL</span><span class="tech-tag">NURBS</span><span class="tech-tag">Arduino</span><span class="tech-tag">LiDAR</span><span class="tech-tag">PID Control</span><span class="tech-tag">MATLAB</span>
@@ -137,17 +137,17 @@ import ProjectCard from "../components/ProjectCard.jsx";
       <div class="flex items-start gap-3">
         <img src="/logos/jvplabs.png" alt="JVPLabs" class="w-9 h-9 rounded-md mt-0.5 object-contain" />
         <div>
-          <h3 class="font-display font-600 text-base text-white/90">Verification & Validation Student</h3>
+          <h3 class="font-display font-600 text-base text-white/90">Design Verification & Validation Student</h3>
           <p class="text-sm text-white/40 mt-0.5">JVPLabs</p>
         </div>
       </div>
       <span class="text-xs font-mono text-white/25 whitespace-nowrap shrink-0">May – Aug 2025</span>
     </div>
           <ul class="space-y-2 text-sm text-white/50 leading-relaxed">
-            <li>Refactored Python-based data tools into a structured <span class="text-white/70">JupyterLab</span> application with modular components for log retrieval, processing, and visualization.</li>
-            <li>Performed firmware updates and device configuration on <span class="text-white/70">Jetson Nano</span> through Linux.</li>
-            <li>Designed and executed bring-up, stress, and regression tests on prototype medical hardware, validating power, I²C sensors, and IR-camera acquisition.</li>
-            <li>Standardized FAT and end-of-line testing protocols, improving post-assembly quality control.</li>
+            <li>Accelerated medical data analysis workflows by ~83% by refactoring legacy <span class="text-white/70">Python</span> scripts into a modular application for patient recording retrieval, ECG/video signal processing, and anatomical grid-overlay visualization.</li>
+            <li>Flashed and validated new firmware builds on <span class="text-white/70">Jetson Nano</span> devices via <span class="text-white/70">Linux CLI</span>, reconfiguring system settings and verifying functionality through Bash scripting, log analysis, and data-transfer checks.</li>
+            <li>Diagnosed hardware faults across bring-up, stress, and regression tests on medical hardware by analyzing <span class="text-white/70">Linux</span> logs to isolate power, I²C, and IR-camera acquisition failures.</li>
+            <li>Improved post-assembly quality control by designing and standardizing FAT, end-of-line, and hardware test frameworks, accelerating onboarding for new verification engineers.</li>
           </ul>
           <div class="flex flex-wrap gap-1.5 mt-4">
             <span class="tech-tag">Python</span><span class="tech-tag">JupyterLab</span><span class="tech-tag">NumPy</span><span class="tech-tag">Pandas</span><span class="tech-tag">Linux</span><span class="tech-tag">Jetson Nano</span><span class="tech-tag">Hardware Testing</span>
@@ -302,21 +302,33 @@ import ProjectCard from "../components/ProjectCard.jsx";
     <h2 class="section-title mb-10">Technical Skills</h2>
     <div class="grid sm:grid-cols-2 gap-8">
       <div>
-        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Languages & Frameworks</h3>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Languages</h3>
         <div class="flex flex-wrap gap-2">
-          <span class="tech-tag">C++</span><span class="tech-tag">C</span><span class="tech-tag">Python</span><span class="tech-tag">MATLAB</span><span class="tech-tag">Bash</span><span class="tech-tag">SQL / PostgreSQL</span><span class="tech-tag">PyTorch</span><span class="tech-tag">NumPy</span><span class="tech-tag">Pandas</span>
+          <span class="tech-tag">C/C++</span><span class="tech-tag">Python</span><span class="tech-tag">SQL</span><span class="tech-tag">Bash</span><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span>
         </div>
       </div>
       <div>
-        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Hardware & Tools</h3>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Hardware & Embedded</h3>
         <div class="flex flex-wrap gap-2">
-          <span class="tech-tag">PCB Design (KiCad)</span><span class="tech-tag">STM32</span><span class="tech-tag">Arduino</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">PSPICE</span><span class="tech-tag">AutoCAD</span><span class="tech-tag">Git</span><span class="tech-tag">Linux</span><span class="tech-tag">OpenGL</span><span class="tech-tag">GCP</span>
+          <span class="tech-tag">STM32</span><span class="tech-tag">Arduino</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">PCB Design (KiCad)</span><span class="tech-tag">SMT Soldering</span><span class="tech-tag">JTAG/SWD</span><span class="tech-tag">Oscilloscopes</span><span class="tech-tag">PID Control</span>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Circuit Design & Protocols</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="tech-tag">Digital & Analog Circuit Design</span><span class="tech-tag">Power Electronics</span><span class="tech-tag">LTSpice/PSpice</span><span class="tech-tag">UART</span><span class="tech-tag">I2C</span><span class="tech-tag">SPI</span><span class="tech-tag">FDCAN</span><span class="tech-tag">CAN</span>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Software & Tools</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="tech-tag">Git/GitHub</span><span class="tech-tag">Linux CLI</span><span class="tech-tag">OpenGL</span><span class="tech-tag">MATLAB/Simulink</span><span class="tech-tag">Docker</span><span class="tech-tag">RTOS</span><span class="tech-tag">GCP</span><span class="tech-tag">PSQL</span><span class="tech-tag">JupyterLab</span>
         </div>
       </div>
       <div class="sm:col-span-2">
-        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Domains</h3>
+        <h3 class="text-xs font-mono text-white/30 uppercase tracking-wider mb-3">Data, ML & Vision</h3>
         <div class="flex flex-wrap gap-2">
-          <span class="tech-tag">Autonomous Systems</span><span class="tech-tag">Maritime Engineering</span><span class="tech-tag">Embedded Systems</span><span class="tech-tag">Robotics & Control</span><span class="tech-tag">Scientific Computing</span><span class="tech-tag">Data Infrastructure</span>
+          <span class="tech-tag">PyTorch</span><span class="tech-tag">OpenCV</span><span class="tech-tag">MediaPipe</span><span class="tech-tag">Pandas</span><span class="tech-tag">NumPy</span><span class="tech-tag">Scikit-Learn</span><span class="tech-tag">GitHub Actions</span>
         </div>
       </div>
     </div>
