@@ -34,25 +34,25 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <div class="space-y-3 text-sm text-white/50 leading-relaxed mb-5">
           <p>
             AEGIS (Autonomous Environmental Guardian for Intelligent Search-and-Rescue) is a
-            scale-model vessel targeting <span class="text-white/70">IMO Level 2/3 autonomy</span>.
+            scale-model vessel targeting IMO Level 2/3 autonomy.
             The problem it addresses is straightforward: Canada has the longest coastline in the world,
             Arctic conditions make crewed SAR patrols dangerous and expensive, and existing fleets
             can't cover it all. AEGIS is meant to fill that gap as a forward-deployed
-            <span class="text-white/70">thermal search drone</span> that gets to the scene ahead
+            thermal search drone that gets to the scene ahead
             of Coast Guard crews, scanning for people in the water and relaying conditions back to
             shore. The autonomy and comms architecture came out of
-            my <a href="#mass-report" class="text-white/70 underline underline-offset-2 decoration-white/20 hover:decoration-white/40">MASS connectivity research</a>,
+            my <a href="#mass-report" class="underline underline-offset-2 decoration-white/20 hover:decoration-white/40">MASS connectivity research</a>,
             which I did first specifically to figure out how a vessel like this should handle
-            <span class="text-white/70">sensor fusion</span>, decision-making, and connectivity
+            sensor fusion, decision-making, and connectivity
             failover when satellite links drop.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Platform & propulsion</h4>
           <p>
-            An <span class="text-white/70">Arduino Uno</span> drives the propulsion system through
+            An Arduino Uno drives the propulsion system through
             an L298N dual H-bridge controlling a brushed DC thruster motor and a rudder servo. Two
-            VL53L0X <span class="text-white/70">LiDAR sensors</span> (forward and starboard) feed
-            distance readings into a <span class="text-white/70">PID control loop</span> running
+            VL53L0X LiDAR sensors (forward and starboard) feed
+            distance readings into a PID control loop running
             at ~50 Hz for wall tracking and obstacle avoidance. Tuning the PID gains for the tank
             environment took most of the testing time since the hull's drag characteristics change
             a lot between dry-run bench tests and actual water.
@@ -61,24 +61,24 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Dual-processor architecture</h4>
           <p>
             The system splits across two processors over
-            <span class="text-white/70">UART serial</span> at 115200 baud. The Uno handles all
+            UART serial at 115200 baud. The Uno handles all
             real-time motor PID and rudder control, because it needs deterministic loop timing
             and the Pi can't guarantee that. The
-            <span class="text-white/70">Raspberry Pi Zero 2 W</span> runs the compute-heavy
+            Raspberry Pi Zero 2 W runs the compute-heavy
             side: thermal imaging pipeline, camera-based obstacle detection through
-            <span class="text-white/70">OpenCV</span>, GPS/IMU logging at 10 Hz, WiFi telemetry
-            to the ground station, and <span class="text-white/70">3D thermal map compositing</span>.
+            OpenCV, GPS/IMU logging at 10 Hz, WiFi telemetry
+            to the ground station, and 3D thermal map compositing.
             Commands flow Pi-to-Uno as simple ASCII packets (heading setpoints, speed targets),
             and the Uno sends back sensor telemetry and status flags.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Thermal scanning & detection</h4>
           <p>
-            The SAR payload is an <span class="text-white/70">MLX90640 thermal array</span> (32×24)
+            The SAR payload is an MLX90640 thermal array (32×24)
             on a servo mount. It sweeps four positions using the sensor's 110° FOV to get full
             360° azimuth coverage. Each frame is tagged with GPS coordinates and IMU orientation,
             logged to SD card and optionally streamed to the ground station over WiFi. The frames
-            composite into a <span class="text-white/70">3D thermal point cloud</span> of the
+            composite into a 3D thermal point cloud of the
             vessel's surroundings. Human body heat (~30°C+) stands out clearly against open water
             at ~2-4°C, so the detection threshold is generous. When the system picks up a warm
             cluster, it locks the heading, triggers indicator LEDs and a piezo buzzer, and logs
@@ -89,17 +89,17 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
           <p class="text-white/40">
             Next sensor to add (if time and budget allow) is a Pi Camera Module on the CSI port
             for forward-looking obstacle detection via
-            <span class="text-white/50">OpenCV</span>. The LiDAR gives range-based avoidance but
+            OpenCV. The LiDAR gives range-based avoidance but
             can't tell you what the obstacle is. A camera feed with basic classification would
             let the vessel distinguish debris from a kayak from a wave crest.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">In progress: custom carrier PCB</h4>
           <p class="text-white/40">
-            I'm designing a <span class="text-white/50">KiCad</span> carrier PCB that mounts
+            I'm designing a KiCad carrier PCB that mounts
             under the Pi Zero 2 W as a HAT-style board. It consolidates power regulation (5 V
             and 3.3 V rails from a single LiPo input),
-            <span class="text-white/50">I2C sensor headers</span> for the MLX90640, GPS, and IMU,
+            I2C sensor headers for the MLX90640, GPS, and IMU,
             servo PWM output, UART crossover to the Uno, CSI passthrough for the camera, and
             status LEDs. Basically replacing the rats-nest of breadboard jumper wires with
             a single board.
@@ -125,36 +125,36 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <p class="text-xs font-mono text-white/25 mb-3">C++ · Qt · OpenGL · GLSL · NURBS · IGES · Hydrodynamics</p>
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
-            <span class="text-white/70">MAPS</span> (Motion Analysis Program Suite) is a
-            frequency-domain <span class="text-white/70">potential flow solver</span> for
+            MAPS (Motion Analysis Program Suite) is a
+            frequency-domain potential flow solver for
             wave-body interaction, developed by Drs Wei Qiu and Heather Peng. Its core method is
-            the <span class="text-white/70">panel-free method (PFM)</span>, which skips the flat-panel
+            the panel-free method (PFM), which skips the flat-panel
             approximation used in conventional BEM solvers and instead evaluates boundary integrals
             directly on the exact NURBS geometry via Gaussian quadrature, with the Rankine singularity
-            removed analytically through <span class="text-white/70">desingularization</span>.
+            removed analytically through desingularization.
             The solver had no GUI. You'd hand-edit plaintext .in config files, run the binary from a
             terminal, then parse output files separately. I built a desktop client in
-            <span class="text-white/70">C++</span> and <span class="text-white/70">Qt 6</span>
+            C++ and Qt 6
             that wraps the full pipeline: geometry import and inspection, solver configuration
             and execution, and post-processing with interactive charts, all in one window.
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Geometry & visualization</h4>
           <p>
-            The viewer parses <span class="text-white/70">IGES files</span> (Entity 128) and
-            evaluates <span class="text-white/70">NURBS surfaces</span> using
-            <span class="text-white/70">Cox-de Boor recursion</span> for B-spline basis functions,
+            The viewer parses IGES files (Entity 128) and
+            evaluates NURBS surfaces using
+            Cox-de Boor recursion for B-spline basis functions,
             with adaptive grid density based on control point count. Rendering is two-pass: the
             first pass tessellates each patch into a triangle mesh, uploads it to VBOs/IBOs, and
-            draws it with a <span class="text-white/70">Phong fragment shader</span> in GLSL.
+            draws it with a Phong fragment shader in GLSL.
             The second pass overlays Gaussian points and normal arrows via QPainter projected
             through the cached MVP matrix. Each hull body sits in a shared world-space coordinate
             system with its own position, heading, and color palette, so you can load multi-body
             configs (catamarans, trimaran floats, barges alongside a vessel) and see them together.
             Surface normals are editable per-patch with full undo and IGES rewrite, since the
             solver is sensitive to normal orientation and a single flipped patch will blow up the
-            solution. The app also overlays MAPS .geom output (<span class="text-white/70">Gaussian quadrature coordinates</span>,
-            <span class="text-white/70">unit normals</span>, and <span class="text-white/70">surface Jacobians</span>) directly on the mesh so you can verify
+            solution. The app also overlays MAPS .geom output (Gaussian quadrature coordinates,
+            unit normals, and surface Jacobians) directly on the mesh so you can verify
             discretization quality before running a full solve.
           </p>
 
@@ -166,23 +166,23 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             selection, catamaran mode, etc.). The app assembles the complete .in namelist file
             and launches the solver as a child process with stdout piped to a console widget in
             real time. It handles zero-speed and forward-speed formulations,
-            <span class="text-white/70">irregular frequency removal</span> via waterplane lid
-            points, <span class="text-white/70">mean drift forces</span> (near-field and far-field),
-            catamaran/trimaran <span class="text-white/70">rigid-body coupling</span>, and random
+            irregular frequency removal via waterplane lid
+            points, mean drift forces (near-field and far-field),
+            catamaran/trimaran rigid-body coupling, and random
             sea spectral statistics
-            (<span class="text-white/70">Pierson-Moskowitz</span>, <span class="text-white/70">JONSWAP</span>).
+            (Pierson-Moskowitz, JONSWAP).
           </p>
 
           <h4 class="text-xs font-mono text-white/30 uppercase tracking-wider pt-2">Results viewer</h4>
           <p>
-            Tabbed panels for <span class="text-white/70">motion RAOs</span>, added mass,
-            <span class="text-white/70">damping coefficients</span>, wave exciting forces,
+            Tabbed panels for motion RAOs, added mass,
+            damping coefficients, wave exciting forces,
             diffraction forces, drift forces, and section loads, each with amplitude/phase toggle
             and split-by-DOF or combined chart views. Drag-to-zoom, hover tooltips with exact
             values, scientific notation on axes. You can load multiple output files and compare
             them side by side with stable per-dataset color assignment across 10 high-contrast
             colors. Added mass is displayed in tonnes with a full
-            <span class="text-white/70">6×6 coupling matrix</span> view or diagonal-only,
+            6×6 coupling matrix view or diagonal-only,
             depending on whether you care about cross-coupling terms.
           </p>
 
@@ -208,11 +208,11 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
         <div class="space-y-3 text-sm text-white/50 leading-relaxed">
           <p>
             Research paper produced at OERC under Dr. Wei Qiu as part of the
-            <span class="text-white/70">CISMaRT</span> research group. The central question:
+            CISMaRT research group. The central question:
             are current connectivity architectures and governance mechanisms actually sufficient
-            for <span class="text-white/70">Maritime Autonomous Surface Ships</span>, or do MASS
-            and <span class="text-white/70">S-100 data ecosystems</span> need oversight models
-            comparable to <span class="text-white/70">GMDSS</span>, Cospas-Sarsat, and LRIT?
+            for Maritime Autonomous Surface Ships, or do MASS
+            and S-100 data ecosystems need oversight models
+            comparable to GMDSS, Cospas-Sarsat, and LRIT?
           </p>
           <p>
             When a vessel operates with reduced or no crew, the communication link stops being a
@@ -226,23 +226,23 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             I mapped MASS operational modes and mission threads to phase-specific connectivity
             requirements across pre-departure, transit, constrained-water maneuvering, degraded
             conditions, and recovery, using formal risk methods including
-            <span class="text-white/70">FMEA</span>,
-            <span class="text-white/70">STPA</span>, and
-            <span class="text-white/70">Bayesian network</span> hybrid frameworks to characterize
+            FMEA,
+            STPA, and
+            Bayesian network hybrid frameworks to characterize
             mode-transition hazards. I surveyed the full communication technology landscape
             available to MASS (GEO/LEO satellite constellations, HAPS, coastal LTE/5G,
-            <span class="text-white/70">VDES</span>), link redundancy via
-            <span class="text-white/70">SD-WAN</span> orchestration, and cybersecurity
-            infrastructure including <span class="text-white/70">Maritime Connectivity Platform
-            PKI</span>, SECOM-authenticated data exchange, Galileo OSNMA, and AIS spoofing
+            VDES), link redundancy via
+            SD-WAN orchestration, and cybersecurity
+            infrastructure including Maritime Connectivity Platform
+            PKI, SECOM-authenticated data exchange, Galileo OSNMA, and AIS spoofing
             defenses. I also pulled governance and assurance models from aviation
-            (<span class="text-white/70">ICAO RCP framework</span>, UAS C2 link standards,
+            (ICAO RCP framework, UAS C2 link standards,
             DO-178C), automotive (ISO 26262 ASIL, UNECE R155/R156/R157), and public safety
             communications to see what translates.
           </p>
           <p>
-            From that I built a proposed <span class="text-white/70">tiered RCP-Maritime
-            framework</span> that matches governance intensity to service criticality, from
+            From that I built a proposed tiered RCP-Maritime
+            framework that matches governance intensity to service criticality, from
             real-time safety-of-life control links requiring GMDSS-style centralized oversight
             down to background transfers governed through lighter federated models. The gap
             synthesis identified ten specific governance, technical, and assurance shortfalls
@@ -254,7 +254,7 @@ import PhotoGallery from "../../components/PhotoGallery.jsx";
             no independent oversight for commercial connectivity providers serving autonomous
             vessels, maritime PKI adoption is entirely voluntary, and there is no standardized
             mechanism for MASS to publish fallback behavior profiles to traffic management
-            authorities. IMO proceedings at <span class="text-white/70">MSC 110</span> confirmed
+            authorities. IMO proceedings at MSC 110 confirmed
             that connectivity governance will be deferred beyond the non-mandatory MASS Code
             expected for adoption in May 2026, which validated the paper's argument that this is
             one of the most significant unresolved problems in the regulation of maritime autonomy.
