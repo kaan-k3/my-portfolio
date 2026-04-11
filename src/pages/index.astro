@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import ProjectCard from "../components/ProjectCard.jsx";
 ---
 
-<Layout title="Kaan Keskindil — Electrical Engineering">
+<Layout title="Kaan Keskindil | Electrical Engineering">
 
   <!-- HERO -->
   <section class="max-w-5xl mx-auto px-6 pt-36 pb-24">
@@ -42,13 +42,13 @@ import ProjectCard from "../components/ProjectCard.jsx";
 
   <!-- ABOUT -->
   <section id="about" class="max-w-5xl mx-auto px-6 py-20 fade-section">
-    <p class="section-label">01 — About</p>
+    <p class="section-label">01 // About</p>
     <h2 class="section-title">Background</h2>
     <div class="max-w-2xl space-y-4">
       <p class="text-white/65 leading-relaxed">
         I'm an Electrical Engineering student at Memorial University with hands-on
         experience in autonomous systems research, embedded hardware design, and
-        scientific software development. I work across the full stack of engineering —
+        scientific software development. I work across the full stack of engineering:
         from designing PCBs and writing STM32 firmware to building C++/OpenGL
         desktop applications and deploying cloud-based trading infrastructure.
       </p>
@@ -74,7 +74,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
                 <p class="text-sm text-white/40">Memorial University of Newfoundland</p>
               </div>
               <div class="text-right shrink-0">
-                <span class="text-xs font-mono text-white/25">2024 — 2029</span>
+                <span class="text-xs font-mono text-white/25">2024 - 2029</span>
                 <p class="text-sm font-semibold text-white/70 mt-0.5">GPA 4.0 / 4.0</p>
               </div>
             </div>
@@ -100,7 +100,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
   <!-- EXPERIENCE -->
   <section id="experience" class="max-w-5xl mx-auto px-6 py-20">
     <div class="fade-section">
-      <p class="section-label">02 — Experience</p>
+      <p class="section-label">02 // Experience</p>
       <h2 class="section-title">Work History</h2>
     </div>
     <div class="relative pl-6 stagger">
@@ -120,7 +120,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
             <span class="text-xs font-mono text-white/25 whitespace-nowrap shrink-0">Jan – May 2026</span>
           </div>
           <ul class="space-y-2 text-sm text-white/50 leading-relaxed">
-            <li>Developed a <span class="text-white/70">C++/OpenGL</span> desktop application for ship hull visualization and hydrodynamic preprocessing — parsing IGES files to render NURBS surfaces, control nets, and surface normals in an interactive 3D viewer.</li>
+            <li>Developed a <span class="text-white/70">C++/OpenGL</span> desktop application for ship hull visualization and hydrodynamic preprocessing, parsing IGES files to render NURBS surfaces, control nets, and surface normals in an interactive 3D viewer.</li>
             <li>Authored a large-scale research report on <span class="text-white/70">Maritime Autonomous Surface Ship</span> connectivity requirements for IMO and Transport Canada aligned frameworks.</li>
             <li>Designed and built an autonomous model vessel using Arduino and LiDAR with embedded C++ <span class="text-white/70">PID-based control</span> for wall tracking and obstacle avoidance.</li>
           </ul>
@@ -162,7 +162,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
   <!-- PROJECTS -->
   <section id="projects" class="max-w-5xl mx-auto px-6 py-20">
     <div class="fade-section">
-      <p class="section-label">03 — Projects</p>
+      <p class="section-label">03 // Projects</p>
       <h2 class="section-title">Engineering Projects</h2>
     </div>
 
@@ -187,7 +187,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
           contextType="team"
           href="/projects/paradigm"
           tags={["STM32", "KiCad", "C", "PCB Design", "FDCAN", "JTAG"]}
-          modalDescription="Paradigm Engineering is a competitive engineering design team at Memorial University building an autonomous vehicle. I own the vehicle's core embedded electronics — schematic capture, PCB layout, firmware, and hardware validation."
+          modalDescription="Paradigm Engineering is a competitive engineering design team at Memorial University building an autonomous vehicle. I own the vehicle's core embedded electronics: schematic capture, PCB layout, firmware, and hardware validation."
           highlights={[
             "Designed an STM32-based Vehicle Control Unit (VCU) with USB-UART, ST-LINK/JTAG, and FDCAN for CAN bus communication",
             "Built a multi-rail power distribution board converting battery supply into 48V, 24V, 12V, 5V, and 3.3V regulated rails",
@@ -198,7 +198,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
 
         <ProjectCard
           client:only="react"
-          title="AEGIS — Autonomous SAR Vessel"
+          title="AEGIS: Autonomous SAR Vessel"
           subtitle="OERC Research · Supervised by Dr. Wei Qiu · Jan – May 2026"
           description="Scale-model autonomous search-and-rescue vessel targeting IMO Level 2/3 autonomy. Dual-processor architecture (Arduino + Pi Zero 2 W) with thermal imaging, LiDAR, and GPS for person-in-water detection."
           thumbnail="/projects/oerc/boat-thumb.png"
@@ -298,7 +298,7 @@ import ProjectCard from "../components/ProjectCard.jsx";
 
   <!-- SKILLS -->
   <section id="skills" class="max-w-5xl mx-auto px-6 py-20 fade-section">
-    <p class="section-label">04 — Skills</p>
+    <p class="section-label">04 // Skills</p>
     <h2 class="section-title mb-10">Technical Skills</h2>
     <div class="grid sm:grid-cols-2 gap-8">
       <div>
